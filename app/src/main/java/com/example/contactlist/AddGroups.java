@@ -49,7 +49,12 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
                 String groupName = etGroupName.getText().toString();
                 if (groupName != null) {
                     if (!groupDATABASE.isNameExists(groupName)) {
-                        groupDATABASE.insert_grp_name(groupName);
+                        Boolean isInsertedGroup = groupDATABASE.insert_grp_name(groupName);
+                        if (isInsertedGroup) {
+                            Toast.makeText(AddGroups.this, "Group Created...!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(AddGroups.this, "Failed to Create Group...!", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Toast.makeText(AddGroups.this, "Already Exist...!", Toast.LENGTH_SHORT).show();
                     }

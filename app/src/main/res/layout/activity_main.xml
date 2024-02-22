@@ -60,10 +60,37 @@
         android:gravity="center_vertical"
         android:padding="10dp"
         android:text="Add Groups"
+        android:textStyle="bold"
         android:transitionName="tv_addGroup"
         app:layout_constraintLeft_toRightOf="@+id/ivAddGroups"
         app:layout_constraintTop_toBottomOf="@+id/llofSelectgroup" />
 
+
+    <ImageView
+        android:id="@+id/imgAddContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_person_add"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivAddGroups" />
+
+    <TextView
+        android:id="@+id/tvAddContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:text="Add Contact"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imgAddContact"
+        app:layout_constraintLeft_toRightOf="@+id/imgAddContact"
+        app:layout_constraintTop_toTopOf="@+id/imgAddContact" />
 
     <ImageView
         android:id="@+id/imgImportContacts"
@@ -73,7 +100,7 @@
         android:layout_margin="10dp"
         android:padding="10dp"
         android:src="@drawable/ic_contact"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/tvAddContacts"
         app:layout_constraintTop_toBottomOf="@+id/ivAddGroups" />
 
     <TextView
@@ -81,13 +108,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_margin="10dp"
         android:gravity="center_vertical"
         android:padding="10dp"
         android:text="Import Contacts"
         android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imgImportContacts"
         app:layout_constraintLeft_toRightOf="@+id/imgImportContacts"
-        app:layout_constraintTop_toBottomOf="@+id/tvAddGroups" />
+        app:layout_constraintTop_toTopOf="@+id/imgImportContacts" />
 
     <LinearLayout
         android:id="@+id/llofContactNumber"
@@ -95,6 +123,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/tvImportContacts">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -133,6 +162,7 @@
             android:layout_marginEnd="5dp"
             android:backgroundTint="#CDC5C5"
             android:padding="10dp"
+            android:textStyle="bold"
             android:src="@drawable/ic_contact"
             android:text="Add" />
     </LinearLayout>

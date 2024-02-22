@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
 import android.content.ContentResolver;
@@ -21,9 +22,15 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +44,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AdapterAddedPhoneContacts.OnDeleteClickListener, AdapterView.OnItemSelectedListener {
     Spinner groupNameSpinner;
-    TextView tvGroupName, tvaddgrp, tvImportContacts;
+    TextView tvGroupName, tvaddgrp, tvImportContacts, tvAddContacts;
     AppCompatButton btnAddContacts;
     ImageView imgImportContacts, imgaddGrups;
     RecyclerView recyclerView;
@@ -49,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
     AppCompatEditText etname, etnumber;
     ArrayList<ModelGroupName> groupNameList;
     ArrayList<ContactModel> groupNumbersList;
-    ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+    LinearLayout llofaddcontactsedittexts;
+
     GroupDATABASE groupDATABASE = new GroupDATABASE(this);
 
 
@@ -65,8 +73,6 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         List<ContactAddedModelClass> selectedItems = getIntent().getParcelableArrayListExtra("selectedItems");
 
         String[] groups = {"Group 1", "Group 2", "Group 3", "Group 4", "Group 5", "Group 6"};
-        //  ArrayList<GroupsModel> groups =new ArrayList<>();
-
         groupNameSpinner = findViewById(R.id.spinnerOfGropuName);
         tvGroupName = findViewById(R.id.tvGroupName);
         btnAddContacts = findViewById(R.id.btnAddContacts);
@@ -77,13 +83,30 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         etnumber = findViewById(R.id.etContactNumber);
         tvImportContacts = findViewById(R.id.tvImportContacts);
         tvaddgrp = findViewById(R.id.tvAddGroups);
+        tvAddContacts = findViewById(R.id.tvAddContacts);
+        llofaddcontactsedittexts = findViewById(R.id.llofContactNumber);
 
         groupNameSpinner.setOnItemSelectedListener(MainActivity.this);
 
-        /*ArrayAdapter arrayAdapter = new ArrayAdapter(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
-                groupNameList);
-        arrayAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-        groupNameSpinner.setAdapter(arrayAdapter);*/
+        tvAddContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (llofaddcontactsedittexts.getVisibility() == View.VISIBLE) {
+                   // Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move_animationbottomtotop);
+                   // llofaddcontactsedittexts.startAnimation(animation);
+                    llofaddcontactsedittexts.setVisibility(View.GONE);
+
+                } else {
+                    /// animateLinearLayoutVisibility();
+
+                    Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slideanimationfromtoptobottom);
+                    llofaddcontactsedittexts.startAnimation(animation);
+                    llofaddcontactsedittexts.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         tvImportContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,13 +128,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 startActivity(intent);
             }
         });
-        if (flag == true) {
-           /* ContactAddedModelClass contactAddedModelClass = new ContactAddedModelClass();
-            arrayListofusers.add(contactAddedModelClass);
-            recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-            adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, arrayListofusers);
-            recyclerView.setAdapter(adapterAddedPhoneContacts);*/
-        }
+
         if (selectedItems != null) {
             manualAddedList.addAll(selectedItems);
             recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -129,21 +146,20 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
                     Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
                     if (isInsertedGroupNumber == true) {
+                        etname.setText("");
+                        etnumber.setText("");
                         Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
                     }
-                  /*  ContactAddedModelClass contactAddedModelClass = new ContactAddedModelClass(name, mobNo);
-                    manualAddedList.add(contactAddedModelClass);*/
-                    groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+
+                    //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
 
 
                 } else {
                     Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
                 }
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
-                recyclerView.setAdapter(adapterPhoneContacts);
+                makeseprateListAndSet();
 
             }
         });
@@ -167,22 +183,62 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         //to add numbers
         groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
 
-        //to make a seprate list of same group names
-        Map<String, List<ContactModel>> groupedMap = new HashMap<>();
-        for (ContactModel record : groupNumbersList) {
-            String groupName = record.getId();
-            if (groupedMap.containsValue(groupName)) {
 
+        groupNameSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                tvGroupName.setText(groupNameSpinner.getSelectedItem().toString());
+                Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+                String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+                for (ContactModel contactModel : groupNumbersList) {
+                    String groupName = contactModel.id;
+
+                    if (groupedMap.containsKey(groupName)) {
+                        groupedMap.get(contactModel.id).add(contactModel);
+                    } else {
+                        // groupNameWiseList.add(contactModel);
+                        ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+                        groupNameWiseList.add(contactModel);
+                        groupedMap.put(groupName, groupNameWiseList);
+                    }
+                }
+                ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
+
+
+                //
+                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
+                recyclerView.setAdapter(adapterPhoneContacts);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //to make a seprate list of same group names
+        /*Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+        String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+        for (ContactModel contactModel : groupNumbersList) {
+            String groupName = contactModel.id;
+
+            if (groupedMap.containsKey(groupName)) {
+                groupedMap.get(contactModel.id).add(contactModel);
             } else {
-                groupNameWiseList.add(record);
+                // groupNameWiseList.add(contactModel);
+                ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+                groupNameWiseList.add(contactModel);
                 groupedMap.put(groupName, groupNameWiseList);
             }
         }
+        ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
+
 
         //
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
-        recyclerView.setAdapter(adapterPhoneContacts);
+        adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
+        recyclerView.setAdapter(adapterPhoneContacts);*/
     }
 
     @Override
@@ -218,10 +274,61 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         groupDATABASE.deleteGroupNumber(position);
         AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(this, groupNumbersList, this);
         adapterAddedPhoneContacts.notifyItemRemoved(position);
+        makeseprateListAndSet();
+
+    }
+
+    public void makeseprateListAndSet() {
         groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
 
+        Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+        String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+        for (ContactModel contactModel : groupNumbersList) {
+            String groupName = contactModel.id;
+
+            if (groupedMap.containsKey(groupName)) {
+                groupedMap.get(contactModel.id).add(contactModel);
+            } else {
+                // groupNameWiseList.add(contactModel);
+                ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+                groupNameWiseList.add(contactModel);
+                groupedMap.put(groupName, groupNameWiseList);
+            }
+        }
+        ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
+
+
+        //
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
+        adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
         recyclerView.setAdapter(adapterPhoneContacts);
+    }
+
+    private void animateLinearLayoutVisibility() {
+        llofaddcontactsedittexts.setVisibility(View.VISIBLE);
+
+        // Calculate the Y coordinates for the animation based on button and LinearLayout positions
+        int[] tvaddcontactLocation = new int[2];
+        int[] linearLayoutLocation = new int[2];
+        // Get the Y coordinates of the button and LinearLayout
+        tvAddContacts.getLocationInWindow(tvaddcontactLocation);
+        llofaddcontactsedittexts.getLocationInWindow(linearLayoutLocation);
+
+        // Calculate the Y delta values for the animation
+        float fromYDelta = 0;
+        float toYDelta = tvAddContacts.getHeight() - 110;
+        ;
+
+        // Create a TranslateAnimation from top to bottom
+        Animation animation = new TranslateAnimation(0, 0, fromYDelta, toYDelta);
+
+        // Set the duration of the animation in milliseconds
+        animation.setDuration(1000);
+
+        // Optionally, set an interpolator for acceleration and deceleration
+        // animation.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        // Start the animation
+        llofaddcontactsedittexts.startAnimation(animation);
     }
 }

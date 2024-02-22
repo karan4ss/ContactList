@@ -76,7 +76,12 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
 
     @Override
     public int getItemCount() {
-        return arrayListOfAddeduser.size();
+        if (arrayListOfAddeduser == null) {
+            return 0;
+        } else {
+            return arrayListOfAddeduser.size();
+        }
+
     }
 
 
