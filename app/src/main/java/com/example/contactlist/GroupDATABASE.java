@@ -28,6 +28,8 @@ public class GroupDATABASE extends SQLiteOpenHelper {
     public static String CONTACT = "number";
     public static String CON_STATUS = "status";
     ArrayList<ModelGroupName> objModelArray_lis;
+    ArrayList<ContactModel> groupNumbersList;
+
     Context context;
 
     public GroupDATABASE(Context context) {
@@ -62,17 +64,21 @@ public class GroupDATABASE extends SQLiteOpenHelper {
     }
 
     public boolean insert_grp_name(String grp_name) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(GRP_NAME, grp_name);
+        if (!isNameExists(grp_name)) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put(GRP_NAME, grp_name);
 
 
-        long result = db.insert(TABLE_GROUPS_NAME, null, cv);
-        if (result == -1) {
-            return false;
-        } else {
-            return true;
+            long result = db.insert(TABLE_GROUPS_NAME, null, cv);
+            if (result == -1) {
+                return false;
+            } else {
+                return true;
+            }
         }
+
+        return false;
     }
 
     public boolean insert_grp_number(String c_name, String contact, String fid) {
@@ -191,12 +197,77 @@ public class GroupDATABASE extends SQLiteOpenHelper {
     }
 
     //
+    public ArrayList<ContactModel> getAllDataOfGroupNumbers() {
+
+        try {
+            groupNumbersList = new ArrayList<ContactModel>();
+            SQLiteDatabase opDB = this.getReadableDatabase();
+            if (opDB != null) {
+                Cursor cursor = opDB.rawQuery("select * from  " + TABLE_GROUP_NUMBER, null);
+                if (cursor != null) {
+
+                    while (cursor.moveToNext()) {
+                        ContactModel contactModel = new ContactModel();
+                        contactModel.name = cursor.getString(1);
+                        contactModel.number = (cursor.getString(2));
+                        contactModel.id = (cursor.getString(3));
+                        contactModel.grpnumberid = (cursor.getString(0));
+                        //  String name = cursor.getString(1);
+
+
+                        //objModelArray_lis.add(name);
+                        groupNumbersList.add(contactModel);
+                    }
+                    return groupNumbersList;
+                } else {
+                    Toast.makeText(context, "NO DATA IS RETREIVED || EMPTY ", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(context, AddGroups.class);
+                    context.startActivity(i);
+                    return null;
+                }
+            } else {
+                Toast.makeText(context, "DB IS NULL", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+        } catch (Exception e) {
+            Toast.makeText(context, "getName " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+    }
+
+
+    //to get groupname wise data
+  
+
+    //
     public void deleteGroup(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
        /* ContentValues cv = new ContentValues();
         cv.put(GRP_ID, id);*/
         db.delete(TABLE_GROUPS_NAME, GRP_ID + " = ? ", new String[]{String.valueOf(id)});
 
+    }
+
+    public void deleteGroupNumber(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+       /* ContentValues cv = new ContentValues();
+        cv.put(GRP_ID, id);*/
+        db.delete(TABLE_GROUP_NUMBER, GRP_NUM_ID + " = ? ", new String[]{String.valueOf(id)});
+
+    }
+
+    public boolean isNameExists(String name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_GROUPS_NAME, null, GRP_NAME + "=?",
+                new String[]{name}, null, null, null, null);
+
+        boolean exists = cursor.getCount() > 0;
+
+        cursor.close();
+        db.close();
+
+        return exists;
     }
     //
 

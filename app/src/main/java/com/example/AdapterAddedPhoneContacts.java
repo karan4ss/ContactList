@@ -18,17 +18,18 @@ import com.example.contactlist.R;
 import java.util.ArrayList;
 
 public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAddedPhoneContacts.ViewHolder> {
+    // public static AdapterAddedPhoneContacts.OnDeleteClickListener OnDeleteClickListener;
     Activity activity;
-    ArrayList<ContactAddedModelClass> arrayListOfAddeduser;
+    ArrayList<ContactModel> arrayListOfAddeduser;
     private OnDeleteClickListener onDeleteClickListener;
 
-    public AdapterAddedPhoneContacts(Activity activity, ArrayList<ContactAddedModelClass> arrayListofaddedUsers) {
+    public AdapterAddedPhoneContacts(Activity activity, ArrayList<ContactModel> arrayListofaddedUsers) {
         this.activity = activity;
         this.arrayListOfAddeduser = arrayListofaddedUsers;
         notifyDataSetChanged();
     }
 
-    public AdapterAddedPhoneContacts(Activity activity, ArrayList<ContactAddedModelClass> arrayListOfAddeduser, OnDeleteClickListener onDeleteClickListener) {
+    public AdapterAddedPhoneContacts(Activity activity, ArrayList<ContactModel> arrayListOfAddeduser, OnDeleteClickListener onDeleteClickListener) {
         this.activity = activity;
         this.arrayListOfAddeduser = arrayListOfAddeduser;
         this.onDeleteClickListener = onDeleteClickListener;
@@ -43,14 +44,18 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ContactAddedModelClass contactAddedModelClass = arrayListOfAddeduser.get(position);
-        holder.tvItemName.setText(contactAddedModelClass.getName());
-        holder.tvItemNumber.setText(contactAddedModelClass.getPhone_number());
+        ContactModel contactModel = arrayListOfAddeduser.get(position);
+        String groupNumberId = contactModel.getGrpnumberid();
+        holder.tvItemName.setText(contactModel.getName());
+        holder.tvItemNumber.setText(contactModel.getNumber());
 
         holder.ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               deleteItem(position);
+                //  deleteItem(position);
+                if (onDeleteClickListener != null) {
+                    onDeleteClickListener.onDeleteClick(Integer.parseInt(groupNumberId));
+                }
 
 
             }
@@ -58,10 +63,12 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
 
 
     }
+
     private void deleteItem(int position) {
         arrayListOfAddeduser.remove(position);
         notifyDataSetChanged();
     }
+
     public interface OnDeleteClickListener {
         void onDeleteClick(int position);
     }
@@ -81,7 +88,7 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
             super(itemView);
             tvItemName = itemView.findViewById(R.id.tvItemName);
             tvItemNumber = itemView.findViewById(R.id.tvItemNumber);
-            ivDelete=itemView.findViewById(R.id.ivdelete);
+            ivDelete = itemView.findViewById(R.id.ivdelete);
             /*ivDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

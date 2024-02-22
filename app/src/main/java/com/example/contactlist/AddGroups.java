@@ -41,20 +41,24 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
         btnsave = findViewById(R.id.btnSave);
         etGroupName = findViewById(R.id.etGroupName);
         rvGroupNames = findViewById(R.id.rvGrpNames);
+        etGroupName.requestFocus();
 
         btnsave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String groupName = etGroupName.getText().toString();
                 if (groupName != null) {
-                    groupDATABASE.insert_grp_name(groupName);
+                    if (!groupDATABASE.isNameExists(groupName)) {
+                        groupDATABASE.insert_grp_name(groupName);
+                    } else {
+                        Toast.makeText(AddGroups.this, "Already Exist...!", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 groupNameList = groupDATABASE.getAllData();
                 rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
                 adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
                 rvGroupNames.setAdapter(adapterGroupNames);
-
-
             }
         });
 
@@ -63,7 +67,6 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
     @Override
     protected void onResume() {
         super.onResume();
-
         groupNameList = groupDATABASE.getAllData();
         rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
         adapterGroupNames = new AdapterGroupNames(this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);

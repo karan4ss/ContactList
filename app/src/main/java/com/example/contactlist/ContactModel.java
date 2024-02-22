@@ -1,9 +1,10 @@
 package com.example.contactlist;
 
 public class ContactModel {
-    String name, number;
+    String grpnumberid, id, name, number;
 
-    public ContactModel(String name, String number) {
+    public ContactModel(String id, String name, String number) {
+        this.id = id;
         this.name = name;
         this.number = number;
     }
@@ -11,8 +12,24 @@ public class ContactModel {
     public ContactModel() {
     }
 
+    public String getGrpnumberid() {
+        return grpnumberid;
+    }
+
+    public void setGrpnumberid(String grpnumberid) {
+        this.grpnumberid = grpnumberid;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setName(String name) {

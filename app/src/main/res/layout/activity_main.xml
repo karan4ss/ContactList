@@ -6,73 +6,100 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <LinearLayout
-        android:id="@+id/llOfGropuName"
+        android:id="@+id/llofSelectgroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:weightSum="2"
         app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/tvSelectSpinnerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:text="Select Group :"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
             android:id="@+id/spinnerOfGropuName"
-            android:layout_width="190dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
+            android:layout_weight="1.8"
             android:drawableEnd="@drawable/ic_spinner_icon"
             android:gravity="center_vertical"
             android:padding="10dp"
             android:text="abc" />
-
-        <ImageView
-            android:id="@+id/ivAddGroups"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:src="@drawable/ic_groupadd" />
-
-        <TextView
-            android:id="@+id/tvAddGroups"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"
-            android:text="Add Groups" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/llOfContactName"
-        android:layout_width="match_parent"
+
+    <ImageView
+        android:id="@+id/ivAddGroups"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/llOfGropuName">
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_groupadd"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llofSelectgroup" />
 
-        <ImageView
-            android:id="@+id/imgImportContacts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="10dp"
-            android:src="@drawable/ic_contact" />
+    <TextView
+        android:id="@+id/tvAddGroups"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:text="Add Groups"
+        android:transitionName="tv_addGroup"
+        app:layout_constraintLeft_toRightOf="@+id/ivAddGroups"
+        app:layout_constraintTop_toBottomOf="@+id/llofSelectgroup" />
 
-        <TextView
-            android:id="@+id/tvImportContacts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Import Contacts"
-            android:textSize="15sp" />
-    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imgImportContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_contact"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivAddGroups" />
+
+    <TextView
+        android:id="@+id/tvImportContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:text="Import Contacts"
+        android:textSize="15sp"
+        app:layout_constraintLeft_toRightOf="@+id/imgImportContacts"
+        app:layout_constraintTop_toBottomOf="@+id/tvAddGroups" />
 
     <LinearLayout
         android:id="@+id/llofContactNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@+id/llOfContactName">
+        app:layout_constraintTop_toBottomOf="@+id/tvImportContacts">
 
         <com.google.android.material.textfield.TextInputLayout
 
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contact Name"
             android:padding="10dp">
@@ -85,7 +112,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contact Number"
             android:padding="10dp">
@@ -101,10 +128,10 @@
             android:id="@+id/btnAddContacts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
+            android:layout_gravity="center_horizontal"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="5dp"
-            android:backgroundTint="#F6574B"
+            android:backgroundTint="#CDC5C5"
             android:padding="10dp"
             android:src="@drawable/ic_contact"
             android:text="Add" />
@@ -142,8 +169,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAddedContacts"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:layout_height="0dp"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llofGroupNameDisplay" />
 
 

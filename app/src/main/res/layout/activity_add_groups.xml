@@ -6,38 +6,56 @@
     android:layout_height="match_parent"
     tools:context=".AddGroups">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilOfgroupname"
-        android:padding="20dp"
+    <LinearLayout
+        android:id="@+id/lloftilOfentergroupname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Group Name"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etGroupName"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilOfgroupname"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="Enter Group Name"
+            android:padding="20dp"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etGroupName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:transitionName="tv_addGroup" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="Save"
-        android:textStyle="bold"
-        android:textColor="@color/white"
-        android:background="@color/teal_200"
-        app:layout_constraintTop_toBottomOf="@+id/tilOfgroupname"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/teal_700"
+            android:text="Save"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilOfgroupname" />
+    </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGrpNames"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/btnSave"
-        android:padding="10dp"/>
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:nestedScrollingEnabled="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lloftilOfentergroupname"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
