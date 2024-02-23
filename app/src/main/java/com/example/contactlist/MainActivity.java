@@ -1,5 +1,6 @@
 package com.example.contactlist;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -11,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.inputmethodservice.Keyboard;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -37,6 +40,25 @@ import android.widget.Toast;
 
 import com.example.AdapterAddedPhoneContacts;
 
+/*import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;*/
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +66,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AdapterAddedPhoneContacts.OnDeleteClickListener, AdapterView.OnItemSelectedListener {
     Spinner groupNameSpinner;
-    TextView tvGroupName, tvaddgrp, tvImportContacts, tvAddContacts;
+    TextView tvGroupName, tvaddgrp, tvImportContacts, tvAddContacts, tvImportExcelSheet;
     AppCompatButton btnAddContacts;
     ImageView imgImportContacts, imgaddGrups;
     RecyclerView recyclerView;
@@ -57,9 +79,11 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
     ArrayList<ModelGroupName> groupNameList;
     ArrayList<ContactModel> groupNumbersList;
     LinearLayout llofaddcontactsedittexts;
+    private static final int PICK_FILE_REQUEST_CODE = 42;
+    String globalGroupName;
 
     GroupDATABASE groupDATABASE = new GroupDATABASE(this);
-
+    private List<String> excelDataList = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -85,6 +109,8 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         tvaddgrp = findViewById(R.id.tvAddGroups);
         tvAddContacts = findViewById(R.id.tvAddContacts);
         llofaddcontactsedittexts = findViewById(R.id.llofContactNumber);
+        tvImportExcelSheet = findViewById(R.id.tvImportExcelorCsv);
+
 
         groupNameSpinner.setOnItemSelectedListener(MainActivity.this);
 
@@ -93,8 +119,8 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             public void onClick(View v) {
 
                 if (llofaddcontactsedittexts.getVisibility() == View.VISIBLE) {
-                   // Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move_animationbottomtotop);
-                   // llofaddcontactsedittexts.startAnimation(animation);
+                    // Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move_animationbottomtotop);
+                    // llofaddcontactsedittexts.startAnimation(animation);
                     llofaddcontactsedittexts.setVisibility(View.GONE);
 
                 } else {
@@ -106,11 +132,19 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 }
             }
         });
+        tvImportExcelSheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalGroupName = groupNameSpinner.getSelectedItem().toString();
+                openFilePicker();
+            }
+        });
 
         tvImportContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //  btnGetContactsFromDevice();
+                globalGroupName = groupNameSpinner.getSelectedItem().toString();
                 Intent intent = new Intent(MainActivity.this, ShowContactsList.class);
                 startActivity(intent);
 
@@ -166,6 +200,145 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                Uri uri = data.getData();
+                /*List<ExcelDataModel> excelDataList = readExcelData(uri);
+                for (int i = 0; i < excelDataList.size(); i++) {
+                    String name = excelDataList.get(i).getName();
+                    String mobNo = excelDataList.get(i).getMobno();
+                    String fId = groupNameSpinner.getSelectedItem().toString();
+                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
+                    if (isInsertedGroupNumber == true) {
+                        Toast.makeText(MainActivity.this, "Imported Excel Contacts...!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
+                    }
+                }*/
+                if (uri != null) {
+                    processExcelFile(uri);
+                }
+
+
+            }
+        }
+    }
+
+    private void processExcelFile(Uri fileUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(fileUri);
+            Workbook workbook;
+
+            if (fileUri.getPath().endsWith(".xls")) {
+                // For Excel files in XLS format (older version)
+                workbook = new HSSFWorkbook(inputStream);
+            } else if (fileUri.getPath().endsWith(".xlsx")) {
+                // For Excel files in XLSX format (newer version)
+                workbook = new XSSFWorkbook(inputStream);
+            } else {
+                // Unsupported file format
+                Toast.makeText(this, "Unsupported file format", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            List<ExcelDataModel> excelList = new ArrayList<>();
+
+            // Assuming the first row contains column headers
+            Row headerRow = sheet.getRow(0);
+            int nameColumnIndex = findColumnIndex(headerRow, "name");
+            int mobileNumberColumnIndex = findColumnIndex(headerRow, "mobile number");
+
+            if (nameColumnIndex == -1 || mobileNumberColumnIndex == -1) {
+                // Columns not found
+                Toast.makeText(this, "Columns not found in Excel file", Toast.LENGTH_SHORT).show();
+                workbook.close();
+                return;
+            }
+
+            for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+                Row row = sheet.getRow(rowIndex);
+
+                String name = getStringCellValue(row, nameColumnIndex);
+                String mobileNumber = getStringCellValue(row, mobileNumberColumnIndex);
+                double mobileNumberRegular = Double.parseDouble(mobileNumber);
+                DecimalFormat decimalFormat = new DecimalFormat("#");
+                String formattedNumber = decimalFormat.format(mobileNumberRegular);
+
+
+                ExcelDataModel excelDataModel = new ExcelDataModel(name, String.valueOf(formattedNumber));
+                excelList.add(excelDataModel);
+            }
+
+            for (int i = 0; i < excelList.size(); i++) {
+                String name = excelList.get(i).getName();
+                String mobNo = excelList.get(i).getMobno();
+                // String fId = groupNameSpinnerInShowList.getSelectedItem().toString();
+                Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, globalGroupName);
+                if (isInsertedGroupNumber == true) {
+                    if (i == excelList.size() - 1) {
+                        Toast.makeText(MainActivity.this, "Import Excel Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+
+            // Set the list to the adapter
+            //adapterPhoneContacts.setContactList(excelList);
+            /*recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+            adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
+            recyclerView.setAdapter(adapterPhoneContacts);
+            adapterPhoneContacts.notifyDataSetChanged();*/
+
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Error reading Excel file", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private int findColumnIndex(Row headerRow, String columnName) {
+        for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+            Cell cell = headerRow.getCell(i);
+            if (cell != null) {
+                if (cell.getCellType() == CellType.STRING && columnName.equalsIgnoreCase(cell.getStringCellValue())) {
+                    return i;
+                } else if (cell.getCellType() == CellType.NUMERIC) {
+                    // Handle numeric value, e.g., convert it to a string and compare
+                    if (columnName.equalsIgnoreCase(String.valueOf(cell.getNumericCellValue()))) {
+                        return i;
+                    }
+                }
+            }
+        }
+        return -1; // Column not found
+    }
+
+    private String getStringCellValue(Row row, int columnIndex) {
+        Cell cell = row.getCell(columnIndex);
+        if (cell != null) {
+            if (cell.getCellType() == CellType.STRING) {
+                return cell.getStringCellValue();
+            } else if (cell.getCellType() == CellType.NUMERIC) {
+                // Handle numeric value, e.g., format it or convert it to a string
+                return String.valueOf(cell.getNumericCellValue());
+            } else {
+                // Handle other cell types as needed
+                return ""; // Return an empty string if the cell type is not STRING or NUMERIC
+            }
+        } else {
+            return ""; // Return an empty string if the cell is null
+        }
+    }
+
 
     @Override
     protected void onResume() {
@@ -331,4 +504,42 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         // Start the animation
         llofaddcontactsedittexts.startAnimation(animation);
     }
+
+    private void openFilePicker() {
+        /*Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); // MIME type for Excel files
+        startActivityForResult(intent, READ_REQUEST_CODE);*/
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        //  intent.setType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        intent.setType("application/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
+    }
+
+  /*  private List<ExcelDataModel> readExcelData(Uri uri) {
+        List<ExcelDataModel> excelDataList = new ArrayList<>();
+
+        try (InputStream inputStream = getContentResolver().openInputStream(uri)) {
+            Workbook workbook = WorkbookFactory.create(inputStream);
+            Sheet sheet = workbook.getSheetAt(0); // Assuming data is on the first sheet
+
+            for (Row row : sheet) {
+                ExcelDataModel excelData = new ExcelDataModel();
+                Cell cell1 = row.getCell(0); // Adjust index based on your Excel columns
+                excelData.setName(cell1.getStringCellValue());
+                Cell cell2 = row.getCell(1);
+                excelData.setMobno(cell2.getStringCellValue());
+                // Add more lines for additional columns
+
+                excelDataList.add(excelData);
+            }
+
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return excelDataList;
+    }*/
 }

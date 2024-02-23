@@ -1,6 +1,8 @@
 package com.example.contactlist;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +21,16 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
 
     Activity activity;
     ArrayList<ContactModel> arrayList;
+    ArrayList<ContactModel> filteredList;
     ArrayList<ContactAddedModelClass> arrayListForAddingContacts = new ArrayList<ContactAddedModelClass>();
     ArrayList<String> mergerdArrayist = new ArrayList<String>();
     private OnItemClickListener listener;
 
-    public AdapterPhoneContacts(Activity activity, ArrayList<ContactModel> arrayList,OnItemClickListener listener) {
+    public AdapterPhoneContacts(Activity activity, ArrayList<ContactModel> arrayList, OnItemClickListener listener) {
         this.activity = activity;
         this.arrayList = arrayList;
         this.listener = listener;
+        this.filteredList = new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -48,7 +52,7 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
 
     @Override
     public void onBindViewHolder(@NonNull AdapterPhoneContacts.ViewHolder holder, int position) {
-        ContactModel contactModel = arrayList.get(position);
+        ContactModel contactModel = filteredList.get(position);
         ContactAddedModelClass contactAddedModelClass = new ContactAddedModelClass();
 
         holder.tvItemName.setText((CharSequence) contactModel.getName());
@@ -60,16 +64,16 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 contactAddedModelClass.setName(String.valueOf(arrayList.get(position).getName()));
                 contactAddedModelClass.setPhone_number(arrayList.get(position).getNumber());
-                if (isChecked){
+                if (isChecked) {
                     arrayListForAddingContacts.add(contactAddedModelClass);
                     Toast.makeText(activity, "Added...!", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     arrayListForAddingContacts.remove(contactAddedModelClass);
                     Toast.makeText(activity, "Removed...!", Toast.LENGTH_SHORT).show();
                 }
 
 
-                if (listener!=null){
+                if (listener != null) {
                     listener.onItemClick(arrayListForAddingContacts);
                 }
 
@@ -82,13 +86,37 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
 
     }
 
+    public void filter(String query) {
+        filteredList.clear();
+
+        if (query.length() >= 3) {
+            query = query.toLowerCase().trim();
+
+            for (ContactModel item : arrayList) {
+                if (item.getName().toLowerCase().contains(query)) {
+                    filteredList.add(item);
+                }
+            }
+        } else {
+            // If the query has less than 3 characters, show the entire list
+            filteredList.addAll(arrayList);
+        }
+
+        notifyDataSetChanged();
+    }
+
     public interface OnItemClickListener {
         void onItemClick(ArrayList<ContactAddedModelClass> dataList);
     }
 
     @Override
     public int getItemCount() {
-        return arrayList.size();
+        if (filteredList != null) {
+            return filteredList.size();
+        } else {
+            return arrayList.size();
+        }
+
     }
 
 

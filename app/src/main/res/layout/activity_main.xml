@@ -59,11 +59,42 @@
         android:layout_margin="10dp"
         android:gravity="center_vertical"
         android:padding="10dp"
-        android:text="Add Groups"
+        android:text="Add Groups  "
         android:textStyle="bold"
         android:transitionName="tv_addGroup"
         app:layout_constraintLeft_toRightOf="@+id/ivAddGroups"
         app:layout_constraintTop_toBottomOf="@+id/llofSelectgroup" />
+
+    <ImageView
+        android:id="@+id/imgImportExcel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+
+        android:layout_marginStart="5dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_import"
+        app:layout_constraintBottom_toTopOf="@+id/imgImportContacts"
+        app:layout_constraintLeft_toRightOf="@+id/tvAddGroups"
+        app:layout_constraintRight_toLeftOf="@+id/tvImportExcelorCsv"
+        app:layout_constraintTop_toBottomOf="@+id/llofSelectgroup" />
+
+    <TextView
+        android:id="@+id/tvImportExcelorCsv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="10dp"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:padding="10dp"
+        android:text="Import Excel File"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imgImportExcel"
+        app:layout_constraintLeft_toRightOf="@+id/imgImportExcel"
+        app:layout_constraintTop_toTopOf="@+id/imgImportExcel" />
 
 
     <ImageView
@@ -101,7 +132,7 @@
         android:padding="10dp"
         android:src="@drawable/ic_contact"
         app:layout_constraintLeft_toRightOf="@+id/tvAddContacts"
-        app:layout_constraintTop_toBottomOf="@+id/ivAddGroups" />
+        app:layout_constraintTop_toBottomOf="@+id/imgImportExcel" />
 
     <TextView
         android:id="@+id/tvImportContacts"
@@ -162,9 +193,9 @@
             android:layout_marginEnd="5dp"
             android:backgroundTint="#CDC5C5"
             android:padding="10dp"
-            android:textStyle="bold"
             android:src="@drawable/ic_contact"
-            android:text="Add" />
+            android:text="Add"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -201,6 +232,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:nestedScrollingEnabled="false"
+        android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llofGroupNameDisplay" />
 

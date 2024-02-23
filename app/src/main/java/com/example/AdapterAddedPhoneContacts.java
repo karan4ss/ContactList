@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.contactlist.ContactAddedModelClass;
 import com.example.contactlist.ContactModel;
+import com.example.contactlist.ExcelDataModel;
 import com.example.contactlist.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAddedPhoneContacts.ViewHolder> {
     // public static AdapterAddedPhoneContacts.OnDeleteClickListener OnDeleteClickListener;
@@ -68,6 +70,8 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
         arrayListOfAddeduser.remove(position);
         notifyDataSetChanged();
     }
+
+
 
     public interface OnDeleteClickListener {
         void onDeleteClick(int position);

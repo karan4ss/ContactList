@@ -16,7 +16,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.AdapterAddedPhoneContacts;
@@ -31,6 +36,10 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
     AdapterAddedPhoneContacts adapterAddedPhoneContacts;
     AppCompatButton btnAddSingleContacts;
     ArrayList<String> arrayListofusers = new ArrayList();
+    ArrayList<ModelGroupName> groupNameList;
+    Spinner groupNameSpinnerInShowList;
+    GroupDATABASE groupDATABASE = new GroupDATABASE(this);
+    EditText etSearch;
 
     //
 
@@ -43,6 +52,8 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
         setContentView(R.layout.activity_show_contacts_list);
         rvContactFromPhone = findViewById(R.id.rvOfPhoneContactList);
         btnAddSingleContacts = findViewById(R.id.btnAddSingleContacts);
+        groupNameSpinnerInShowList = findViewById(R.id.spinnerOfGropuNameInShowList);
+        etSearch = findViewById(R.id.etSearchContact);
         checkSelfPermission();
 
         btnAddSingleContacts.setOnClickListener(new View.OnClickListener() {
@@ -58,11 +69,25 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
                 intent.putExtra("list", arrayListofusers);
                 startActivity(intent);*/
 
-                Intent intent = new Intent(ShowContactsList.this, MainActivity.class);
+               /* Intent intent = new Intent(ShowContactsList.this, MainActivity.class);
                 intent.putExtra("selectedItems", new ArrayList<>(arraylistofselectedusers));
-                startActivity(intent);
+                startActivity(intent);*/
+                for (int i = 0; i < arraylistofselectedusers.size(); i++) {
+                    String name = arraylistofselectedusers.get(i).getName();
+                    String mobNo = arraylistofselectedusers.get(i).getPhone_number();
+                    String fId = groupNameSpinnerInShowList.getSelectedItem().toString();
+                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
+                    if (isInsertedGroupNumber == true) {
+                        Toast.makeText(ShowContactsList.this, "Import Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(ShowContactsList.this, "Failed To Import Contacts...!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+
             }
         });
+
     }
 
     private void checkSelfPermission() {
@@ -108,9 +133,24 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
             }
             cursor.close();
         }
-            rvContactFromPhone.setLayoutManager(new LinearLayoutManager(this));
-            adapterPhoneContacts = new AdapterPhoneContacts(this, arrayList, this);
-            rvContactFromPhone.setAdapter(adapterPhoneContacts);
+        rvContactFromPhone.setLayoutManager(new LinearLayoutManager(this));
+        adapterPhoneContacts = new AdapterPhoneContacts(this, arrayList, this);
+        rvContactFromPhone.setAdapter(adapterPhoneContacts);
+
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                adapterPhoneContacts.filter(editable.toString());
+            }
+        });
     }
 
     @Override
@@ -131,5 +171,19 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
         startActivity(intent);*/
 
         arraylistofselectedusers = dataList;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        GroupDATABASE groupDATABASE = new GroupDATABASE(this);
+        groupNameList = groupDATABASE.getAllData();
+        ArrayList<String> onlyGroupName = new ArrayList<>();
+        for (ModelGroupName modelGroupName : groupNameList) {
+            onlyGroupName.add(modelGroupName.GroupName);
+        }
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, onlyGroupName);
+        arrayAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+        groupNameSpinnerInShowList.setAdapter(arrayAdapter);
     }
 }
