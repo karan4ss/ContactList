@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/teal_700"
-    android:padding="8dp">
+    android:background="@color/white"
+    android:padding="8dp"
+    android:layout_marginVertical="5dp"
+    android:id="@+id/clmainofDevicePhoneContact">
 
     <ImageView
         android:id="@+id/ivProfileimg"
@@ -43,7 +45,16 @@
 
     </LinearLayout>
 
+    <View
+        app:layout_constraintTop_toBottomOf="@id/llofNameandNumberContact"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        android:layout_marginTop="3dp"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <CheckBox
+        android:visibility="visible"
         android:id="@+id/checkbox"
         android:layout_width="20dp"
         android:layout_height="20dp"

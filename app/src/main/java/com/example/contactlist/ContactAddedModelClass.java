@@ -7,13 +7,15 @@ import androidx.annotation.NonNull;
 
 public class ContactAddedModelClass implements Parcelable {
     String name, phone_number;
+    Boolean isSelected;
 
     public ContactAddedModelClass() {
     }
 
-    public ContactAddedModelClass(String name, String phone_number) {
+    public ContactAddedModelClass(String name, String phone_number,Boolean isSelected) {
         this.name = name;
         this.phone_number = phone_number;
+        this.isSelected=isSelected;
     }
 
     protected ContactAddedModelClass(Parcel in) {
@@ -32,6 +34,14 @@ public class ContactAddedModelClass implements Parcelable {
             return new ContactAddedModelClass[size];
         }
     };
+
+    public Boolean getSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(Boolean selected) {
+        isSelected = selected;
+    }
 
     public String getName() {
         return name;

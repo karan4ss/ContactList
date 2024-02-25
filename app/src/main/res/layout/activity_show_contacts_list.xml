@@ -10,12 +10,12 @@
         android:id="@+id/etSearchContact"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:hint="Search Contact..."
-        android:padding="10dp"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
         android:background="@drawable/bg_search_et"
+        android:gravity="center_vertical"
+        android:hint="Search Contact..."
+        android:padding="10dp"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
@@ -32,24 +32,25 @@
         <TextView
             android:id="@+id/tvSelectSpinnerValueInShowlist"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="0.2"
             android:gravity="center"
-            android:text="Select Group :"
+            android:text="Group Name :"
             android:textSize="20sp"
+            android:padding="10dp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Spinner
-            android:id="@+id/spinnerOfGropuNameInShowList"
+        <TextView
+            android:id="@+id/tvofGropuNameInShowList"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1.8"
-            android:drawableEnd="@drawable/ic_spinner_icon"
             android:gravity="center_vertical"
             android:padding="10dp"
+            android:textSize="18sp"
             android:text="abc" />
     </LinearLayout>
 

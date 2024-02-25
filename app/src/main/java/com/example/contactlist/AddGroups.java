@@ -5,8 +5,13 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.AdapterAddedPhoneContacts;
@@ -14,6 +19,9 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,13 +37,25 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
     //    String url = "http://localhost/ContactsProject/";
     GroupDATABASE groupDATABASE = new GroupDATABASE(this);
     ArrayList<ModelGroupName> groupNameList;
+    androidx.appcompat.widget.Toolbar myToolbar;
+    ImageView ivBackInToolbar;
+    TextView tvTitlteInToolbar;
     //ArrayList<ModelGroupName> arrayListofGroups = new ArrayList();
 
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_groups);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        myToolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.my_toolbar);
+        View customToolbar = inflater.inflate(R.layout.custom_toolbar, myToolbar, false);
+        myToolbar.addView(customToolbar);
+        ivBackInToolbar = customToolbar.findViewById(R.id.ivBackInToolbar);
+        tvTitlteInToolbar = customToolbar.findViewById(R.id.tvTitlteInToolbar);
+        tvTitlteInToolbar.setText("Create Groups");
+        ivBackInToolbar.setVisibility(View.VISIBLE);
 
         groupNameList = groupDATABASE.getAllData();
         btnsave = findViewById(R.id.btnSave);
@@ -43,6 +63,12 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
         rvGroupNames = findViewById(R.id.rvGrpNames);
         etGroupName.requestFocus();
 
+        ivBackInToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         btnsave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

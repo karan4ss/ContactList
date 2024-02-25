@@ -15,6 +15,9 @@ import com.example.AdapterAddedPhoneContacts;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.ViewHolder> {
 
@@ -46,6 +49,36 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
         ModelGroupName modelGroupName = group_list.get(position);
         String group_name = modelGroupName.getGroupName();
         String group_id = String.valueOf(modelGroupName.getId());
+
+
+        //
+        ArrayList<ContactModel> groupNumbersList;
+        groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+        Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+        //  String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+        for (ContactModel contactModel : groupNumbersList) {
+            String groupName = contactModel.id;
+
+            if (groupedMap.containsKey(groupName)) {
+                groupedMap.get(contactModel.id).add(contactModel);
+            } else {
+                // groupNameWiseList.add(contactModel);
+                ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+                groupNameWiseList.add(contactModel);
+                groupedMap.put(groupName, groupNameWiseList);
+            }
+        }
+
+        ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(group_name);
+        if (group1Records!=null){
+            String sizeOfGroup = String.valueOf(group1Records.size());
+            holder.tvsizeofgroupMembers.setText(sizeOfGroup);
+        }else {
+            holder.tvsizeofgroupMembers.setText("0");
+        }
+
+        //
+
         if (group_name != null) {
             holder.tvItemGroupName.setText(modelGroupName.getGroupName());
         }
@@ -55,7 +88,7 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
                 if (onDeleteClickListener != null) {
                     onDeleteClickListener.onDeleteClick(Integer.parseInt(group_id));
                 }
-               // groupDATABASE.deleteGroup(Integer.parseInt(group_id));
+                // groupDATABASE.deleteGroup(Integer.parseInt(group_id));
 
             }
         });
@@ -76,13 +109,14 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvItemGroupName;
+        TextView tvItemGroupName,tvsizeofgroupMembers;
         ImageView ivItemDeleteicon;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvItemGroupName = itemView.findViewById(R.id.tvItemGroupName);
             ivItemDeleteicon = itemView.findViewById(R.id.ivItemDeleteGroupName);
+            tvsizeofgroupMembers=itemView.findViewById(R.id.tvsizeofgroupMembers);
         }
     }
 }

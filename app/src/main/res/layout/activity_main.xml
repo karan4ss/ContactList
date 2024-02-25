@@ -6,6 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:contentInsetEnd="0dp"
+        app:contentInsetStart="0dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/llofSelectgroup"
@@ -13,7 +21,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="2"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/my_toolbar">
 
 
         <TextView
@@ -45,8 +53,9 @@
         android:id="@+id/ivAddGroups"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:padding="10dp"
+        android:layout_marginVertical="10dp"
+        android:layout_marginStart="10dp"
+        android:padding="8dp"
         android:src="@drawable/ic_groupadd"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llofSelectgroup" />
@@ -56,9 +65,10 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_gravity="center_vertical"
-        android:layout_margin="10dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="10dp"
         android:gravity="center_vertical"
-        android:padding="10dp"
+        android:padding="8dp"
         android:text="Add Groups  "
         android:textStyle="bold"
         android:transitionName="tv_addGroup"
@@ -73,7 +83,7 @@
         android:layout_margin="10dp"
 
         android:layout_marginStart="5dp"
-        android:padding="10dp"
+        android:padding="8dp"
         android:src="@drawable/ic_import"
         app:layout_constraintBottom_toTopOf="@+id/imgImportContacts"
         app:layout_constraintLeft_toRightOf="@+id/tvAddGroups"
@@ -88,7 +98,7 @@
         android:layout_marginEnd="10dp"
         android:gravity="center_vertical"
         android:maxLines="2"
-        android:padding="10dp"
+        android:padding="8dp"
         android:text="Import Excel File"
         android:textSize="15sp"
         android:textStyle="bold"
@@ -103,7 +113,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:padding="10dp"
+        android:padding="8dp"
         android:src="@drawable/ic_person_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivAddGroups" />
@@ -113,9 +123,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_margin="10dp"
+        android:layout_marginHorizontal="5dp"
+        android:layout_marginVertical="10dp"
         android:gravity="center_vertical"
-        android:padding="10dp"
+        android:padding="8dp"
         android:text="Add Contact"
         android:textSize="15sp"
         android:textStyle="bold"
@@ -129,7 +140,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:padding="10dp"
+        android:padding="8dp"
         android:src="@drawable/ic_contact"
         app:layout_constraintLeft_toRightOf="@+id/tvAddContacts"
         app:layout_constraintTop_toBottomOf="@+id/imgImportExcel" />
@@ -140,7 +151,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:gravity="center_vertical"
-        android:padding="10dp"
+        android:padding="8dp"
         android:text="Import Contacts"
         android:textSize="15sp"
         android:textStyle="bold"
@@ -180,7 +191,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etContactNumber"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:inputType="phone" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

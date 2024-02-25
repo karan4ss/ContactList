@@ -14,16 +14,27 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.inputmethodservice.Keyboard;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -32,11 +43,13 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.AdapterAddedPhoneContacts;
 
@@ -66,7 +79,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AdapterAddedPhoneContacts.OnDeleteClickListener, AdapterView.OnItemSelectedListener {
     Spinner groupNameSpinner;
-    TextView tvGroupName, tvaddgrp, tvImportContacts, tvAddContacts, tvImportExcelSheet;
+    TextView tvGroupName, tvaddgrp, tvImportContacts, tvAddContacts, tvImportExcelSheet, tvTitlteInToolbar;
     AppCompatButton btnAddContacts;
     ImageView imgImportContacts, imgaddGrups;
     RecyclerView recyclerView;
@@ -81,15 +94,35 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
     LinearLayout llofaddcontactsedittexts;
     private static final int PICK_FILE_REQUEST_CODE = 42;
     String globalGroupName;
+    ImageView ivBackInToolbar;
 
     GroupDATABASE groupDATABASE = new GroupDATABASE(this);
     private List<String> excelDataList = new ArrayList<>();
+    androidx.appcompat.widget.Toolbar myToolbar;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        myToolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.my_toolbar);
+        //setSupportActionBar(myToolbar);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View customToolbar = inflater.inflate(R.layout.custom_toolbar, myToolbar, false);
+        myToolbar.addView(customToolbar);
+        ivBackInToolbar = customToolbar.findViewById(R.id.ivBackInToolbar);
+        tvTitlteInToolbar = customToolbar.findViewById(R.id.tvTitlteInToolbar);
+        tvTitlteInToolbar.setText("Unique Promotion App");
+        ivBackInToolbar.setVisibility(View.GONE);
+
+       /* String title = "Unique Promotion App";
+        int titleTextColor = Color.WHITE;
+        SpannableString spannableTitle = new SpannableString(title);
+        spannableTitle.setSpan(new ForegroundColorSpan(titleTextColor), 0, title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        getSupportActionBar().setTitle(spannableTitle);*/
+
 
         Intent intent = getIntent();
 
@@ -146,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 //  btnGetContactsFromDevice();
                 globalGroupName = groupNameSpinner.getSelectedItem().toString();
                 Intent intent = new Intent(MainActivity.this, ShowContactsList.class);
+                intent.putExtra("groupname", globalGroupName);
                 startActivity(intent);
 
             }
@@ -153,12 +187,14 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         tvaddgrp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                globalGroupName = groupNameSpinner.getSelectedItem().toString();
                 Intent intent = new Intent(MainActivity.this, AddGroups.class);
                 /*Pair[] pairs = new Pair[1];
                 pairs[0] = new Pair<View, String>(tvaddgrp, "tv_addGroup");
                 ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
 
                 startActivity(intent, activityOptions.toBundle());*/
+
                 startActivity(intent);
             }
         });
@@ -272,22 +308,35 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
 
                 ExcelDataModel excelDataModel = new ExcelDataModel(name, String.valueOf(formattedNumber));
+
                 excelList.add(excelDataModel);
+
             }
+
 
             for (int i = 0; i < excelList.size(); i++) {
                 String name = excelList.get(i).getName();
                 String mobNo = excelList.get(i).getMobno();
                 // String fId = groupNameSpinnerInShowList.getSelectedItem().toString();
-                Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, globalGroupName);
-                if (isInsertedGroupNumber == true) {
-                    if (i == excelList.size() - 1) {
-                        Toast.makeText(MainActivity.this, "Import Excel Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
-                    }
+                if (i <= 200) {
+                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, globalGroupName);
+                    if (isInsertedGroupNumber == true) {
+                        if (i == excelList.size() - 1) {
+                            Toast.makeText(MainActivity.this, "Import Excel Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
+                        }
 
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, "Limit Excceds...! ", Toast.LENGTH_SHORT).show();
                 }
+
+            }
+            if (excelList.size() <= 200) {
+
+            } else {
+                Toast.makeText(this, "Limit Excceds! \n only 200 contatcs improrted successfully!", Toast.LENGTH_SHORT).show();
             }
 
 
@@ -443,13 +492,29 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
     @Override
     public void onDeleteClick(int position) {
-        //  arrayListofusers.remove(position);
-        groupDATABASE.deleteGroupNumber(position);
-        AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(this, groupNumbersList, this);
-        adapterAddedPhoneContacts.notifyItemRemoved(position);
-        makeseprateListAndSet();
 
+        //  arrayListofusers.remove(position);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Delete Contact");
+        alert.setMessage("Are you sure you want to delete?");
+        alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                groupDATABASE.deleteGroupNumber(position);
+                AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
+                adapterAddedPhoneContacts.notifyItemRemoved(position);
+                makeseprateListAndSet();
+            }
+        });
+        alert.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // close dialog
+                dialog.cancel();
+            }
+        });
+        alert.show();
     }
+
 
     public void makeseprateListAndSet() {
         groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();

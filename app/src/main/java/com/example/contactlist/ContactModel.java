@@ -1,6 +1,6 @@
 package com.example.contactlist;
 
-public class ContactModel {
+public class ContactModel extends ContactAddedModelClass {
     String grpnumberid, id, name, number;
 
     public ContactModel(String id, String name, String number) {
