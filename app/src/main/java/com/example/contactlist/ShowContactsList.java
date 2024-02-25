@@ -152,13 +152,12 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
             public void onItemClick(View view, int position) {
                 adapterPhoneContacts.toggleSelection(position);
 
-                // Get the selected contact from the filtered list
+                // to egt the selected contact from the filtered list
                 ContactModel selectedContact = filteredList.get(position);
 
-                // Find the original position in the unfiltered list
+                // to get the original position in the full conacts list
                 int originalPosition = arrayList.indexOf(selectedContact);
-                Toast.makeText(ShowContactsList.this, "Original Position: " + originalPosition,
-                        Toast.LENGTH_SHORT).show();
+
             }
 
             @Override

@@ -107,9 +107,10 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
 
     public void toggleSelection(int position) {
         ContactAddedModelClass contactAddedModelClass = filteredList.get(position);
-        if (selectedPositions.contains(position)) {
+        int mainPostition= arrayList.indexOf(filteredList.get(position));
+        if (arrayList.get(mainPostition).isIsselectContact()) {
            selectedPositions.remove(Integer.valueOf(position));
-            int mainPostition= arrayList.indexOf(filteredList.get(position));
+            //int mainPostition= arrayList.indexOf(filteredList.get(position));
             //arrayList.get(position).setIsselectContact(false);
             //if (arrayList.size()>=filteredList.size()){
                 arrayList.get(mainPostition).setIsselectContact(false);
@@ -121,7 +122,7 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
         } else {
             selectedPositions.add(position);
            // if (arrayList.size()>=filteredList.size()){
-            int mainPostition= arrayList.indexOf(filteredList.get(position));
+            //int mainPostition= arrayList.indexOf(filteredList.get(position));
                 arrayList.get(mainPostition).setIsselectContact(true);
            // }else {
            //     filteredList.get(position).setIsselectContact(true);
