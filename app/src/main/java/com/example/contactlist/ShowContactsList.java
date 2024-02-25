@@ -43,11 +43,8 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
     GroupDATABASE groupDATABASE = new GroupDATABASE(this);
     EditText etSearch;
 
-    //
-
     ArrayList<ContactAddedModelClass> arraylistofselectedusers = new ArrayList<ContactAddedModelClass>();
     String groupname;
-    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,19 +61,6 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
         btnAddSingleContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*rvContactFromPhone.setLayoutManager(new LinearLayoutManager(ShowContactsList.this));
-                adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(ShowContactsList.this, arrayListofusers);
-                rvContactFromPhone.setAdapter(adapterAddedPhoneContacts);*/
-               /* ContactAddedModelClass contactAddedModelClass = new ContactAddedModelClass();
-                arrayListofusers.add(String.valueOf(contactAddedModelClass));
-                Intent intent = new Intent(ShowContactsList.this, MainActivity.class);
-                intent.putExtra("addContacts", true);
-                intent.putExtra("list", arrayListofusers);
-                startActivity(intent);*/
-
-               /* Intent intent = new Intent(ShowContactsList.this, MainActivity.class);
-                intent.putExtra("selectedItems", new ArrayList<>(arraylistofselectedusers));
-                startActivity(intent);*/
                 for (int i = 0; i < arraylistofselectedusers.size(); i++) {
                     String name = ((ContactModel) arraylistofselectedusers.get(i)).getName();
                     String mobNo = ((ContactModel) arraylistofselectedusers.get(i)).getNumber();
@@ -137,10 +121,6 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
 
         if (cursor != null && cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-              /*  @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                @SuppressLint("Range") String contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-                Log.i("Contacts_Demo", "Name ::: " + contactName + "Phone ::: " + contactNumber);*/
                 @SuppressLint("Range") String id = cursor.getString(cursor.getColumnIndex(String.valueOf(ContactsContract.Contacts._ID)));
                 @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(String.valueOf(ContactsContract.Contacts.DISPLAY_NAME)));
 
@@ -203,9 +183,6 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
 
     @Override
     public void onItemClick(ArrayList<ContactAddedModelClass> dataList) {
-        /*Intent intent = new Intent(ShowContactsList.this, MainActivity.class);
-        intent.putExtra("selectedItems", new ArrayList<>(dataList));
-        startActivity(intent);*/
 
         arraylistofselectedusers = dataList;
     }

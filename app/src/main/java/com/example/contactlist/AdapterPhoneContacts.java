@@ -69,59 +69,8 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
         holder.tvItemName.setText((CharSequence) contactModel.getName());
         holder.tvItemNumber.setText(contactModel.getNumber());
 
-
-       /* holder.selectContact.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                contactAddedModelClass.setName(String.valueOf(arrayList.get(position).getName()));
-                contactAddedModelClass.setPhone_number(arrayList.get(position).getNumber());
-                if (isChecked) {
-                    arrayListForAddingContacts.add(contactAddedModelClass);
-                    Toast.makeText(activity, "Added...!", Toast.LENGTH_SHORT).show();
-                } else {
-                    arrayListForAddingContacts.remove(contactAddedModelClass);
-                    Toast.makeText(activity, "Removed...!", Toast.LENGTH_SHORT).show();
-                }
-
-
-                if (listener != null) {
-                    listener.onItemClick(arrayListForAddingContacts);
-                }
-
-            }
-        });*/
-
-
-       /* holder.clmainofDevicePhoneContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                contactAddedModelClass.setName(String.valueOf(arrayList.get(position).getName()));
-                contactAddedModelClass.setPhone_number(arrayList.get(position).getNumber());
-
-                if (selectedPositions.contains(position)) {
-                    holder.clmainofDevicePhoneContact.setBackgroundColor(activity.getResources().getColor(teal_700));
-                    arrayListForAddingContacts.add(contactAddedModelClass);
-                    Toast.makeText(activity, "Added...!", Toast.LENGTH_SHORT).show();
-                } else {
-                    holder.clmainofDevicePhoneContact.setBackgroundColor(activity.getResources().getColor(white));
-                    arrayListForAddingContacts.remove(contactAddedModelClass);
-                    Toast.makeText(activity, "Removed...!", Toast.LENGTH_SHORT).show();
-                }
-                // Notify that the data set has changed
-                notifyDataSetChanged();
-
-
-                if (listener != null) {
-                    listener.onItemClick(arrayListForAddingContacts);
-                }
-
-            }
-        });*/
-
-
-        //if (selectedPositions.contains(position)) {
-
-        if (selectedPositions.contains(position)) {
+        int mainPostition= arrayList.indexOf(filteredList.get(position));
+        if (arrayList.get(mainPostition).isIsselectContact()){
             holder.clmainofDevicePhoneContact.setBackgroundColor(activity.getResources().getColor(teal_700));
             contactAddedModelClass.setName(String.valueOf(filteredList.get(position).getName()));
             contactAddedModelClass.setPhone_number(filteredList.get(position).getNumber());
@@ -141,10 +90,10 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
     }
 
     public void filter(String query) {
-
         filteredList.clear();
         if (query.isEmpty() || query.equals(null) || query.equals("")) {
             filteredList.addAll(arrayList);
+            flag = false;
         } else {
             for (ContactModel contact : arrayList) {
                 if (contact.getName().toLowerCase().contains(query.toLowerCase())) {
@@ -159,11 +108,25 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
     public void toggleSelection(int position) {
         ContactAddedModelClass contactAddedModelClass = filteredList.get(position);
         if (selectedPositions.contains(position)) {
-            selectedPositions.remove(Integer.valueOf(position));
+           selectedPositions.remove(Integer.valueOf(position));
+            int mainPostition= arrayList.indexOf(filteredList.get(position));
+            //arrayList.get(position).setIsselectContact(false);
+            //if (arrayList.size()>=filteredList.size()){
+                arrayList.get(mainPostition).setIsselectContact(false);
+         //   }else {
+           //     filteredList.get(position).setIsselectContact(false);
+          //  }
             arrayListForAddingContacts.remove(contactAddedModelClass);
             Toast.makeText(activity, "Removed...!", Toast.LENGTH_SHORT).show();
         } else {
             selectedPositions.add(position);
+           // if (arrayList.size()>=filteredList.size()){
+            int mainPostition= arrayList.indexOf(filteredList.get(position));
+                arrayList.get(mainPostition).setIsselectContact(true);
+           // }else {
+           //     filteredList.get(position).setIsselectContact(true);
+           // }
+
             arrayListForAddingContacts.add(contactAddedModelClass);
             Toast.makeText(activity, "Added...!", Toast.LENGTH_SHORT).show();
         }

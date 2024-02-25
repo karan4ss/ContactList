@@ -2,6 +2,7 @@ package com.example.contactlist;
 
 public class ContactModel extends ContactAddedModelClass {
     String grpnumberid, id, name, number;
+    boolean isselectContact;
 
     public ContactModel(String id, String name, String number) {
         this.id = id;
@@ -42,5 +43,13 @@ public class ContactModel extends ContactAddedModelClass {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public boolean isIsselectContact() {
+        return isselectContact;
+    }
+
+    public void setIsselectContact(boolean isselectContact) {
+        this.isselectContact = isselectContact;
     }
 }
