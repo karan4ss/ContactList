@@ -70,10 +70,10 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
         }
 
         ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(group_name);
-        if (group1Records!=null){
+        if (group1Records != null) {
             String sizeOfGroup = String.valueOf(group1Records.size());
             holder.tvsizeofgroupMembers.setText(sizeOfGroup);
-        }else {
+        } else {
             holder.tvsizeofgroupMembers.setText("0");
         }
 
@@ -86,7 +86,7 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
             @Override
             public void onClick(View v) {
                 if (onDeleteClickListener != null) {
-                    onDeleteClickListener.onDeleteClick(Integer.parseInt(group_id));
+                    onDeleteClickListener.onDeleteClick(Integer.parseInt(group_id), group_name);
                 }
                 // groupDATABASE.deleteGroup(Integer.parseInt(group_id));
 
@@ -100,7 +100,7 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
     }
 
     public interface OnDeleteClickListener {
-        void onDeleteClick(int group_id);
+        void onDeleteClick(int group_id, String group_name);
     }
 
     @Override
@@ -109,14 +109,14 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvItemGroupName,tvsizeofgroupMembers;
+        TextView tvItemGroupName, tvsizeofgroupMembers;
         ImageView ivItemDeleteicon;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvItemGroupName = itemView.findViewById(R.id.tvItemGroupName);
             ivItemDeleteicon = itemView.findViewById(R.id.ivItemDeleteGroupName);
-            tvsizeofgroupMembers=itemView.findViewById(R.id.tvsizeofgroupMembers);
+            tvsizeofgroupMembers = itemView.findViewById(R.id.tvsizeofgroupMembers);
         }
     }
 }

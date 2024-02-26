@@ -109,7 +109,7 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
     }
 
     @Override
-    public void onDeleteClick(int position) {
+    public void onDeleteClick(int position,String group_name) {
         // groupDATABASE.deleteGroup(position);
         //groupNameList.remove(position);
 
@@ -122,10 +122,22 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
                 groupDATABASE.deleteGroup(Integer.parseInt(String.valueOf(position)));
                 AdapterGroupNames adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, AddGroups.this);
                 adapterGroupNames.notifyItemRemoved(position);
+
+                //to delete group data
+
+                Boolean isDeleted = groupDATABASE.delete_data_of_grouprecords(position,group_name);
+                if (isDeleted) {
+                    Toast.makeText(AddGroups.this, "Delete group data Successfully!", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(AddGroups.this, "Failed to delete data", Toast.LENGTH_SHORT).show();
+                }
+                //
                 groupNameList = groupDATABASE.getAllData();
                 rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
                 adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
                 rvGroupNames.setAdapter(adapterGroupNames);
+
+
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

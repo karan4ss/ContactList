@@ -127,6 +127,22 @@ public class GroupDATABASE extends SQLiteOpenHelper {
         }
     }
 
+    public boolean delete_data_of_grouprecords(int grp_id, String grp_name) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery("select * from " + TABLE_GROUP_NUMBER + " where " + FOREIGN_GRP_ID + "=?", new String[]{grp_name});
+        if (cursor != null) {
+            long result = database.delete(TABLE_GROUP_NUMBER, FOREIGN_GRP_ID + "=?", new String[]{grp_name});
+            if (result == -1) {
+                return false;
+            } else {
+
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
     /*public ArrayList<Page1Model> getContact(String show_fid) {
         try {
             ArrayList<Page1Model> r_recycle_lis = new ArrayList<>();
@@ -238,7 +254,7 @@ public class GroupDATABASE extends SQLiteOpenHelper {
 
 
     //to get groupname wise data
-  
+
 
     //
     public void deleteGroup(int id) {
