@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
     private List<String> excelDataList = new ArrayList<>();
     androidx.appcompat.widget.Toolbar myToolbar;
     ArrayList<ContactModel> group1Records;
-    Integer posibleSize=0;
+    Integer posibleSize = 0;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -305,8 +305,23 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 ExcelDataModel excelDataModel = new ExcelDataModel(name, String.valueOf(formattedNumber));
 
                 if (posibleSize < 200 && posibleSize > 0) {
-                    excelList.add(excelDataModel);
-                    posibleSize--;
+                    ////////////////////////////////to check if recored alredy exist
+                    boolean isNamePresent = false;
+                    for (ContactModel contact : group1Records) {
+                        if (contact.getNumber().equals(mobileNumber)) {
+                            isNamePresent = true;
+                            break;
+                        }
+                    }
+                    if (!isNamePresent) {
+                        excelList.add(excelDataModel);
+                        posibleSize--;
+
+                    } else {
+                        Toast.makeText(this, "Already Exist...!", Toast.LENGTH_SHORT).show();
+                    }
+                    ////////////////////////////////
+
                 } else {
                     // Toast.makeText(this, "Group Is Full..!", Toast.LENGTH_SHORT).show();
                 }
