@@ -36,9 +36,9 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="0.2"
             android:gravity="center"
+            android:padding="10dp"
             android:text="Group Name :"
             android:textSize="20sp"
-            android:padding="10dp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -50,8 +50,8 @@
             android:layout_weight="1.8"
             android:gravity="center_vertical"
             android:padding="10dp"
-            android:textSize="18sp"
-            android:text="abc" />
+            android:text="abc"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -75,14 +75,14 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAddSingleContacts"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="30dp"
-        android:backgroundTint="#54E45A"
+        android:backgroundTint="@color/teal_700"
         android:text="Add Contact"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

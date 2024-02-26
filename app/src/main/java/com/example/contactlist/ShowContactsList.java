@@ -29,6 +29,9 @@ import com.example.AdapterAddedPhoneContacts;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ShowContactsList extends AppCompatActivity implements AdapterPhoneContacts.OnItemClickListener {
     RecyclerView rvContactFromPhone;
@@ -42,6 +45,7 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
     TextView tvofGropuNameInShowList;
     GroupDATABASE groupDATABASE = new GroupDATABASE(this);
     EditText etSearch;
+    ArrayList<ContactModel> sizeOfGroup = new ArrayList<>();
 
     ArrayList<ContactAddedModelClass> arraylistofselectedusers = new ArrayList<ContactAddedModelClass>();
     String groupname;
@@ -56,7 +60,35 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
         etSearch = findViewById(R.id.etSearchContact);
         checkSelfPermission();
         groupname = getIntent().getStringExtra("groupname");
+
+        ArrayList<ContactModel> groupNumbersList;
+        groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+        Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+        //  String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+        for (ContactModel contactModel : groupNumbersList) {
+            String groupName = contactModel.id;
+
+            if (groupedMap.containsKey(groupName)) {
+                groupedMap.get(contactModel.id).add(contactModel);
+            } else {
+                // groupNameWiseList.add(contactModel);
+                ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+                groupNameWiseList.add(contactModel);
+                groupedMap.put(groupName, groupNameWiseList);
+            }
+        }
+
+        ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(groupname);
+        if (group1Records != null) {
+
+            sizeOfGroup = (ArrayList<ContactModel>) groupedMap.get(groupname);
+
+        }
         tvofGropuNameInShowList.setText(groupname);
+        filteredList = new ArrayList<>(arrayList);
+        rvContactFromPhone.setLayoutManager(new LinearLayoutManager(this));
+        adapterPhoneContacts = new AdapterPhoneContacts(this, filteredList, this, sizeOfGroup);
+        rvContactFromPhone.setAdapter(adapterPhoneContacts);
 
         btnAddSingleContacts.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,15 +173,16 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
             }
             cursor.close();
         }
-        filteredList = new ArrayList<>(arrayList);
+       /* filteredList = new ArrayList<>(arrayList);
         rvContactFromPhone.setLayoutManager(new LinearLayoutManager(this));
-        adapterPhoneContacts = new AdapterPhoneContacts(this, filteredList, this);
-        rvContactFromPhone.setAdapter(adapterPhoneContacts);
+        adapterPhoneContacts = new AdapterPhoneContacts(this, filteredList, this, sizeOfGroup);
+        rvContactFromPhone.setAdapter(adapterPhoneContacts);*/
 
 
         rvContactFromPhone.addOnItemTouchListener(new RecyclerItemClickListener(this, rvContactFromPhone, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                // if (Integer.parseInt(sizeOfGroup) <= 200) {
                 adapterPhoneContacts.toggleSelection(position);
 
                 // to egt the selected contact from the filtered list
@@ -157,6 +190,7 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
 
                 // to get the original position in the full conacts list
                 int originalPosition = arrayList.indexOf(selectedContact);
+
 
             }
 
@@ -198,5 +232,7 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, onlyGroupName);
         arrayAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
         groupNameSpinnerInShowList.setAdapter(arrayAdapter);*/
+
+
     }
 }

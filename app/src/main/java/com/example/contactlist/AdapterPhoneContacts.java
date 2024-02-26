@@ -36,14 +36,20 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
     private OnItemClickListener listener;
     boolean isSelect = false;
     boolean flag = false;
+    ArrayList<ContactModel> groupList;
+    Integer groupSize;
 
-    public AdapterPhoneContacts(Activity activity, ArrayList<ContactModel> arrayList, OnItemClickListener listener) {
+    public AdapterPhoneContacts(Activity activity, ArrayList<ContactModel> arrayList, OnItemClickListener listener, ArrayList<ContactModel> groupList) {
         this.activity = activity;
         this.arrayList = arrayList;
         this.listener = listener;
+        this.groupList = groupList;
         this.filteredList = new ArrayList<>(arrayList);
         notifyDataSetChanged();
     }
+
+
+
 
 /*
     public AdapterPhoneContacts(ArrayList<ContactModel> arrayList, OnItemClickListener listener) {
@@ -56,7 +62,7 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
     @Override
     public AdapterPhoneContacts.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact_from_phone, parent, false);
-
+        groupSize = groupList.size();
 
         return new ViewHolder(view);
     }
@@ -69,8 +75,8 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
         holder.tvItemName.setText((CharSequence) contactModel.getName());
         holder.tvItemNumber.setText(contactModel.getNumber());
 
-        int mainPostition= arrayList.indexOf(filteredList.get(position));
-        if (arrayList.get(mainPostition).isIsselectContact()){
+        int mainPostition = arrayList.indexOf(filteredList.get(position));
+        if (arrayList.get(mainPostition).isIsselectContact()) {
             holder.clmainofDevicePhoneContact.setBackgroundColor(activity.getResources().getColor(teal_700));
             contactAddedModelClass.setName(String.valueOf(filteredList.get(position).getName()));
             contactAddedModelClass.setPhone_number(filteredList.get(position).getNumber());
@@ -106,35 +112,48 @@ public class AdapterPhoneContacts extends RecyclerView.Adapter<AdapterPhoneConta
     }
 
     public void toggleSelection(int position) {
+
+
         ContactAddedModelClass contactAddedModelClass = filteredList.get(position);
-        int mainPostition= arrayList.indexOf(filteredList.get(position));
+        int mainPostition = arrayList.indexOf(filteredList.get(position));
         if (arrayList.get(mainPostition).isIsselectContact()) {
-           selectedPositions.remove(Integer.valueOf(position));
-            //int mainPostition= arrayList.indexOf(filteredList.get(position));
-            //arrayList.get(position).setIsselectContact(false);
-            //if (arrayList.size()>=filteredList.size()){
-                arrayList.get(mainPostition).setIsselectContact(false);
-         //   }else {
-           //     filteredList.get(position).setIsselectContact(false);
-          //  }
+            selectedPositions.remove(Integer.valueOf(position));
+            arrayList.get(mainPostition).setIsselectContact(false);
             arrayListForAddingContacts.remove(contactAddedModelClass);
             Toast.makeText(activity, "Removed...!", Toast.LENGTH_SHORT).show();
+            groupSize--;
         } else {
-            selectedPositions.add(position);
-           // if (arrayList.size()>=filteredList.size()){
-            //int mainPostition= arrayList.indexOf(filteredList.get(position));
-                arrayList.get(mainPostition).setIsselectContact(true);
-           // }else {
-           //     filteredList.get(position).setIsselectContact(true);
-           // }
+            if (groupSize < 200) {
+                String mobNo = arrayList.get(mainPostition).getNumber();
+                boolean isNamePresent = false;
+                for (ContactAddedModelClass contact : groupList) {
+                    if (((ContactModel) contact).getNumber().equals(mobNo)) {
+                        isNamePresent = true;
+                        break;
+                    }
+                }
+                if (!isNamePresent) {
+                    selectedPositions.add(position);
+                    arrayList.get(mainPostition).setIsselectContact(true);
+                    arrayListForAddingContacts.add(contactAddedModelClass);
+                    Toast.makeText(activity, "Added...!", Toast.LENGTH_SHORT).show();
+                    groupSize++;
+                } else {
+                    Toast.makeText(activity, "Already Exist...!", Toast.LENGTH_SHORT).show();
+                }
 
-            arrayListForAddingContacts.add(contactAddedModelClass);
-            Toast.makeText(activity, "Added...!", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(activity, "limit exceed", Toast.LENGTH_SHORT).show();
+            }
+
         }
         if (listener != null) {
             listener.onItemClick(arrayListForAddingContacts);
         }
         notifyItemChanged(position);
+
+
     }
 
     public interface OnItemClickListener {

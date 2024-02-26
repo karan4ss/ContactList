@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,6 +19,8 @@ import android.widget.Toast;
 import com.example.AdapterAddedPhoneContacts;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+
+import org.apache.commons.math3.analysis.function.Add;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,13 +112,30 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
     public void onDeleteClick(int position) {
         // groupDATABASE.deleteGroup(position);
         //groupNameList.remove(position);
-        groupDATABASE.deleteGroup(Integer.parseInt(String.valueOf(position)));
-        AdapterGroupNames adapterGroupNames = new AdapterGroupNames(this, groupNameList, this);
-        adapterGroupNames.notifyItemRemoved(position);
-        groupNameList = groupDATABASE.getAllData();
-        rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
-        adapterGroupNames = new AdapterGroupNames(this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
-        rvGroupNames.setAdapter(adapterGroupNames);
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Delete Group");
+        alert.setMessage("Are you sure you want to delete?");
+        alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                groupDATABASE.deleteGroup(Integer.parseInt(String.valueOf(position)));
+                AdapterGroupNames adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, AddGroups.this);
+                adapterGroupNames.notifyItemRemoved(position);
+                groupNameList = groupDATABASE.getAllData();
+                rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
+                adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
+                rvGroupNames.setAdapter(adapterGroupNames);
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // close dialog
+                dialog.cancel();
+            }
+        });
+        alert.show();
+
     }
     //    public void insertTODatabase(String groupName) {
 //        Retrofit retrofit = new Retrofit.Builder()

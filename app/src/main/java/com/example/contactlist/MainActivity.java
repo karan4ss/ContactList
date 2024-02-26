@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
     GroupDATABASE groupDATABASE = new GroupDATABASE(this);
     private List<String> excelDataList = new ArrayList<>();
     androidx.appcompat.widget.Toolbar myToolbar;
+    ArrayList<ContactModel> group1Records;
+    Integer posibleSize=0;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -114,14 +116,6 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         tvTitlteInToolbar = customToolbar.findViewById(R.id.tvTitlteInToolbar);
         tvTitlteInToolbar.setText("Unique Promotion App");
         ivBackInToolbar.setVisibility(View.GONE);
-
-       /* String title = "Unique Promotion App";
-        int titleTextColor = Color.WHITE;
-        SpannableString spannableTitle = new SpannableString(title);
-        spannableTitle.setSpan(new ForegroundColorSpan(titleTextColor), 0, title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableTitle.setSpan(new StyleSpan(Typeface.BOLD), 0, title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        getSupportActionBar().setTitle(spannableTitle);*/
 
 
         Intent intent = getIntent();
@@ -256,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                     }
                 }*/
                 if (uri != null) {
+
                     processExcelFile(uri);
                 }
 
@@ -309,7 +304,13 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
                 ExcelDataModel excelDataModel = new ExcelDataModel(name, String.valueOf(formattedNumber));
 
-                excelList.add(excelDataModel);
+                if (posibleSize < 200 && posibleSize > 0) {
+                    excelList.add(excelDataModel);
+                    posibleSize--;
+                } else {
+                    // Toast.makeText(this, "Group Is Full..!", Toast.LENGTH_SHORT).show();
+                }
+
 
             }
 
@@ -318,26 +319,27 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 String name = excelList.get(i).getName();
                 String mobNo = excelList.get(i).getMobno();
                 // String fId = groupNameSpinnerInShowList.getSelectedItem().toString();
-                if (i <= 200) {
-                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, globalGroupName);
-                    if (isInsertedGroupNumber == true) {
-                        if (i == excelList.size() - 1) {
-                            Toast.makeText(MainActivity.this, "Import Excel Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
-                        }
-
-                    } else {
-                        Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
+                // Integer possibleSize = 200 - group1Records.size();
+                //if (i <= 200) {
+                Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, globalGroupName);
+                if (isInsertedGroupNumber == true) {
+                    if (i == excelList.size() - 1) {
+                        Toast.makeText(MainActivity.this, "Import Excel Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
                     }
+
+                    // } else {
+                    //     Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
+                    // }
                 } else {
-                    //Toast.makeText(this, "Limit Excceds...! ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
                 }
 
             }
-            if (excelList.size() <= 200) {
+            /*if (excelList.size() <= 200) {
 
             } else {
                 Toast.makeText(this, "Limit Excceds! \n only 200 contatcs improrted successfully!", Toast.LENGTH_SHORT).show();
-            }
+            }*/
 
 
             // Set the list to the adapter
@@ -409,9 +411,11 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         groupNameSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                 tvGroupName.setText(groupNameSpinner.getSelectedItem().toString());
                 Map<String, List<ContactModel>> groupedMap = new HashMap<>();
                 String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+
                 for (ContactModel contactModel : groupNumbersList) {
                     String groupName = contactModel.id;
 
@@ -424,13 +428,18 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                         groupedMap.put(groupName, groupNameWiseList);
                     }
                 }
-                ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
+                group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
 
 
                 //
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                 adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
                 recyclerView.setAdapter(adapterPhoneContacts);
+                if (group1Records != null) {
+                    posibleSize = 200 - group1Records.size();
+                }
+
+
             }
 
             @Override
@@ -438,6 +447,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
             }
         });
+
 
         //to make a seprate list of same group names
         /*Map<String, List<ContactModel>> groupedMap = new HashMap<>();
@@ -457,10 +467,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
 
 
-        //
-        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-        adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
-        recyclerView.setAdapter(adapterPhoneContacts);*/
+       */
     }
 
     @Override
@@ -473,46 +480,34 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
     }
 
-    public void btnGetContactsFromDevice() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 0);
-
-        }
-        ContentResolver contentResolver = getContentResolver();
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        Cursor cursor = contentResolver.query(uri, null, null, null, null);
-        if (cursor.getCount() > 0) {
-            while (cursor.moveToNext()) {
-                @SuppressLint("Range") String contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                @SuppressLint("Range") String contactNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                Log.i("Contacts_Demo", "Name ::: " + contactName + "Phone ::: " + contactNumber);
-            }
-        }
-    }
 
     @Override
     public void onDeleteClick(int position) {
 
+        groupDATABASE.deleteGroupNumber(position);
+        AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
+        adapterAddedPhoneContacts.notifyItemRemoved(position);
+        makeseprateListAndSet();
         //  arrayListofusers.remove(position);
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+       /* AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Delete Contact");
         alert.setMessage("Are you sure you want to delete?");
-        alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+        alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                groupDATABASE.deleteGroupNumber(position);
+                *//*groupDATABASE.deleteGroupNumber(position);
                 AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
                 adapterAddedPhoneContacts.notifyItemRemoved(position);
-                makeseprateListAndSet();
+                makeseprateListAndSet();*//*
             }
         });
-        alert.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // close dialog
                 dialog.cancel();
             }
         });
-        alert.show();
+        alert.show();*/
     }
 
 
