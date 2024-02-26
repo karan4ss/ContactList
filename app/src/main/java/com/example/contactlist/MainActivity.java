@@ -207,23 +207,60 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 String name = etname.getText().toString();
                 String mobNo = etnumber.getText().toString();
                 String fId = groupNameSpinner.getSelectedItem().toString();
-                if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
-                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
-                    if (isInsertedGroupNumber == true) {
-                        etname.setText("");
-                        etnumber.setText("");
-                        Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
+
+                if (group1Records != null) {
+                    if (group1Records.size() < 200) {
+
+
+                        //
+                        for (ContactModel contact : group1Records) {
+                            if (contact.getNumber().equals(mobNo)) {
+                                Toast.makeText(MainActivity.this, "Number Alreday Exist...!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
+                                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
+                                    if (isInsertedGroupNumber == true) {
+                                        etname.setText("");
+                                        etnumber.setText("");
+                                        Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+
+
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
+                                }
+                                makeseprateListAndSet();
+                            }
+                        }
+                        //
+
                     } else {
-                        Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "No, Only add 200 Contacts In Group.", Toast.LENGTH_SHORT).show();
                     }
-
-                    //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
-
-
                 } else {
-                    Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
+                    if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
+                        Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
+                        if (isInsertedGroupNumber == true) {
+                            etname.setText("");
+                            etnumber.setText("");
+                            Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
+                        }
+
+                        //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+
+
+                    } else {
+                        Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
+                    }
+                    makeseprateListAndSet();
                 }
-                makeseprateListAndSet();
+
 
             }
         });
@@ -309,18 +346,30 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                     boolean isNamePresent = false;
                     for (ContactModel contact : group1Records) {
                         if (contact.getNumber().equals(mobileNumber)) {
-                            isNamePresent = true;
-                            break;
+                            // isNamePresent = true;
+                            //  break;
+                            //Toast.makeText(this, "Already Exist...!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (excelList.size() < 200) {
+                                excelList.add(excelDataModel);
+                                posibleSize--;
+                            }
+
                         }
                     }
-                    if (!isNamePresent) {
-                        excelList.add(excelDataModel);
-                        posibleSize--;
-
-                    } else {
-                        Toast.makeText(this, "Already Exist...!", Toast.LENGTH_SHORT).show();
-                    }
+//                    if (!isNamePresent) {
+//                        excelList.add(excelDataModel);
+//                        posibleSize--;
+//
+//                    } else {
+//                        /// w // Toast.makeText(this, "Already Exist...!", Toast.LENGTH_SHORT).show();
+//                    }
                     ////////////////////////////////
+
+                } else if (group1Records == null) {
+                    if (excelList.size() < 200) {
+                        excelList.add(excelDataModel);
+                    }
 
                 } else {
                     // Toast.makeText(this, "Group Is Full..!", Toast.LENGTH_SHORT).show();
@@ -330,26 +379,31 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             }
 
 
-            for (int i = 0; i < excelList.size(); i++) {
-                String name = excelList.get(i).getName();
-                String mobNo = excelList.get(i).getMobno();
-                // String fId = groupNameSpinnerInShowList.getSelectedItem().toString();
-                // Integer possibleSize = 200 - group1Records.size();
-                //if (i <= 200) {
-                Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, globalGroupName);
-                if (isInsertedGroupNumber == true) {
-                    if (i == excelList.size() - 1) {
-                        Toast.makeText(MainActivity.this, "Import Excel Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
+            if (excelList.size() == 0) {
+                Toast.makeText(this, "No, Only 200 Contacts Improts", Toast.LENGTH_LONG).show();
+            } else {
+                for (int i = 0; i < excelList.size(); i++) {
+                    String name = excelList.get(i).getName();
+                    String mobNo = excelList.get(i).getMobno();
+                    // String fId = groupNameSpinnerInShowList.getSelectedItem().toString();
+                    // Integer possibleSize = 200 - group1Records.size();
+                    //if (i <= 200) {
+                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, globalGroupName);
+                    if (isInsertedGroupNumber == true) {
+                        if (i == excelList.size() - 1) {
+                            Toast.makeText(MainActivity.this, "Import Excel Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
+                        }
+
+                        // } else {
+                        //     Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
+                        // }
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
                     }
 
-                    // } else {
-                    //     Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
-                    // }
-                } else {
-                    Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
                 }
-
             }
+
             /*if (excelList.size() <= 200) {
 
             } else {
