@@ -119,19 +119,27 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
         alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                groupDATABASE.deleteGroup(Integer.parseInt(String.valueOf(position)));
+
+                Boolean isDeleteGroupName= groupDATABASE.deleteGroup(Integer.parseInt(String.valueOf(position)));
+                if (isDeleteGroupName){
+                    //to delete group data
+
+                    Boolean isDeleted = groupDATABASE.delete_data_of_grouprecords(position,group_name);
+                    if (isDeleted) {
+                        Toast.makeText(AddGroups.this, "Delete group data Successfully!", Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(AddGroups.this, "Failed to delete data", Toast.LENGTH_SHORT).show();
+                    }
+                    //
+                }else {
+                    Toast.makeText(AddGroups.this, "Faild To Delete Groupname!", Toast.LENGTH_SHORT).show();
+                }
+
+
                 AdapterGroupNames adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, AddGroups.this);
                 adapterGroupNames.notifyItemRemoved(position);
 
-                //to delete group data
 
-                Boolean isDeleted = groupDATABASE.delete_data_of_grouprecords(position,group_name);
-                if (isDeleted) {
-                    Toast.makeText(AddGroups.this, "Delete group data Successfully!", Toast.LENGTH_SHORT).show();
-                }else {
-                    Toast.makeText(AddGroups.this, "Failed to delete data", Toast.LENGTH_SHORT).show();
-                }
-                //
                 groupNameList = groupDATABASE.getAllData();
                 rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
                 adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);

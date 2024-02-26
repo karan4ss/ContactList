@@ -257,11 +257,16 @@ public class GroupDATABASE extends SQLiteOpenHelper {
 
 
     //
-    public void deleteGroup(int id) {
+    public boolean deleteGroup(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
        /* ContentValues cv = new ContentValues();
         cv.put(GRP_ID, id);*/
-        db.delete(TABLE_GROUPS_NAME, GRP_ID + " = ? ", new String[]{String.valueOf(id)});
+        long result = db.delete(TABLE_GROUPS_NAME, GRP_ID + " = ? ", new String[]{String.valueOf(id)});
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
 
     }
 
