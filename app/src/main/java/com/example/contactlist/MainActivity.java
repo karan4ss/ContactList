@@ -206,70 +206,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             @Override
             public void onClick(View v) {
 
-                String name = etname.getText().toString();
-                String mobNo = etnumber.getText().toString();
-                String fId = groupNameSpinner.getSelectedItem().toString();
-
-
-                if (group1Records != null) {
-                    if (group1Records.size() < 200) {
-
-
-                        //
-                        for (ContactModel contact : group1Records) {
-                            if (contact.getNumber().equals(mobNo)) {
-                                Toast.makeText(MainActivity.this, "Number Alreday Exist...!", Toast.LENGTH_SHORT).show();
-                            } else {
-                                if (group1Records.size() < 200) {
-                                    if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
-                                        Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
-                                        if (isInsertedGroupNumber == true) {
-                                            etname.setText("");
-                                            etnumber.setText("");
-                                            Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
-                                        }
-
-                                        //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
-
-
-                                    } else {
-                                        Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
-                                    }
-                                    makeseprateListAndSet();
-                                }
-
-                            }
-                        }
-                        //
-
-                    } else {
-                        Toast.makeText(MainActivity.this, "No, Only add 200 Contacts In Group.", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    // if (group1Records.size() < 200) {
-                    if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
-                        Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
-                        if (isInsertedGroupNumber == true) {
-                            etname.setText("");
-                            etnumber.setText("");
-                            Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
-                        }
-
-                        //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
-
-
-                    } else {
-                        Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
-                    }
-                    makeseprateListAndSet();
-                    // }
-
-
-                }
+                validateMobileNumber(etnumber.getText().toString());
 
 
             }
@@ -685,29 +622,103 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         }
     }
 
-  /*  private List<ExcelDataModel> readExcelData(Uri uri) {
-        List<ExcelDataModel> excelDataList = new ArrayList<>();
+    /*  private List<ExcelDataModel> readExcelData(Uri uri) {
+          List<ExcelDataModel> excelDataList = new ArrayList<>();
 
-        try (InputStream inputStream = getContentResolver().openInputStream(uri)) {
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            Sheet sheet = workbook.getSheetAt(0); // Assuming data is on the first sheet
+          try (InputStream inputStream = getContentResolver().openInputStream(uri)) {
+              Workbook workbook = WorkbookFactory.create(inputStream);
+              Sheet sheet = workbook.getSheetAt(0); // Assuming data is on the first sheet
 
-            for (Row row : sheet) {
-                ExcelDataModel excelData = new ExcelDataModel();
-                Cell cell1 = row.getCell(0); // Adjust index based on your Excel columns
-                excelData.setName(cell1.getStringCellValue());
-                Cell cell2 = row.getCell(1);
-                excelData.setMobno(cell2.getStringCellValue());
-                // Add more lines for additional columns
+              for (Row row : sheet) {
+                  ExcelDataModel excelData = new ExcelDataModel();
+                  Cell cell1 = row.getCell(0); // Adjust index based on your Excel columns
+                  excelData.setName(cell1.getStringCellValue());
+                  Cell cell2 = row.getCell(1);
+                  excelData.setMobno(cell2.getStringCellValue());
+                  // Add more lines for additional columns
 
-                excelDataList.add(excelData);
+                  excelDataList.add(excelData);
+              }
+
+              workbook.close();
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+
+          return excelDataList;
+      }*/
+    private void validateMobileNumber(String mobileNumber) {
+        String regex = "^[0-9]{10}$"; // Regular expression for 10 digits
+        if (mobileNumber.matches(regex)) {
+            // Valid mobile number
+            getGroupList();
+            String name = etname.getText().toString();
+            String mobNo = etnumber.getText().toString();
+            String fId = groupNameSpinner.getSelectedItem().toString();
+
+
+            if (group1Records != null) {
+                if (group1Records.size() < 200) {
+                    //
+                    for (ContactModel contact : group1Records) {
+                        if (contact.getNumber().equals(mobNo)) {
+                            Toast.makeText(MainActivity.this, "Number Alreday Exist...!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            getGroupList();
+                            if (group1Records.size() < 200) {
+                                if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
+                                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
+                                    if (isInsertedGroupNumber == true) {
+                                        etname.setText("");
+                                        etnumber.setText("");
+                                        Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+
+
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
+                                }
+                                makeseprateListAndSet();
+                            }
+
+                        }
+                    }
+                    //
+
+                } else {
+                    Toast.makeText(MainActivity.this, "No, Only add 200 Contacts In Group.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                // if (group1Records.size() < 200) {
+                if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
+                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
+                    if (isInsertedGroupNumber == true) {
+                        etname.setText("");
+                        etnumber.setText("");
+                        Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
+                    }
+
+                    //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
+                }
+                makeseprateListAndSet();
+                // }
+
+
             }
 
-            workbook.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            // Invalid mobile number
+            Toast.makeText(this, "Invalid Mobile Number!", Toast.LENGTH_SHORT).show();
         }
-
-        return excelDataList;
-    }*/
+    }
 }
