@@ -4,52 +4,28 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.inputmethodservice.Keyboard;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
-import android.util.Log;
-import android.util.Pair;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.example.AdapterAddedPhoneContacts;
 
@@ -63,7 +39,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;*/
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -79,7 +54,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements AdapterAddedPhoneContacts.OnDeleteClickListener, AdapterView.OnItemSelectedListener {
     Spinner groupNameSpinner;
-    TextView tvGroupName, tvaddgrp, tvImportContacts, tvAddContacts, tvImportExcelSheet, tvTitlteInToolbar;
+    TextView tvGroupName, tvaddgrp, tvImportContacts, tvAddContacts, tvImportExcelSheet, tvTitlteInToolbar, tvdisaplyCountOfGroup;
     AppCompatButton btnAddContacts;
     ImageView imgImportContacts, imgaddGrups;
     RecyclerView recyclerView;
@@ -115,7 +90,13 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         ivBackInToolbar = customToolbar.findViewById(R.id.ivBackInToolbar);
         tvTitlteInToolbar = customToolbar.findViewById(R.id.tvTitlteInToolbar);
         tvTitlteInToolbar.setText("Unique Promotion App");
-        ivBackInToolbar.setVisibility(View.GONE);
+        ivBackInToolbar.setVisibility(View.VISIBLE);
+        ivBackInToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
 
         Intent intent = getIntent();
@@ -137,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         tvAddContacts = findViewById(R.id.tvAddContacts);
         llofaddcontactsedittexts = findViewById(R.id.llofContactNumber);
         tvImportExcelSheet = findViewById(R.id.tvImportExcelorCsv);
+        tvdisaplyCountOfGroup = findViewById(R.id.tvdisaplyCountOfGroup);
 
 
         groupNameSpinner.setOnItemSelectedListener(MainActivity.this);
@@ -144,19 +126,22 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         tvAddContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                globalGroupName = groupNameSpinner.getSelectedItem().toString();
+                if (globalGroupName != null) {
+                    if (llofaddcontactsedittexts.getVisibility() == View.VISIBLE) {
+                        // Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move_animationbottomtotop);
+                        // llofaddcontactsedittexts.startAnimation(animation);
+                        llofaddcontactsedittexts.setVisibility(View.GONE);
 
-                if (llofaddcontactsedittexts.getVisibility() == View.VISIBLE) {
-                    // Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move_animationbottomtotop);
-                    // llofaddcontactsedittexts.startAnimation(animation);
-                    llofaddcontactsedittexts.setVisibility(View.GONE);
+                    } else {
+                        /// animateLinearLayoutVisibility();
 
-                } else {
-                    /// animateLinearLayoutVisibility();
-
-                    Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slideanimationfromtoptobottom);
-                    llofaddcontactsedittexts.startAnimation(animation);
-                    llofaddcontactsedittexts.setVisibility(View.VISIBLE);
+                        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slideanimationfromtoptobottom);
+                        llofaddcontactsedittexts.startAnimation(animation);
+                        llofaddcontactsedittexts.setVisibility(View.VISIBLE);
+                    }
                 }
+
             }
         });
         tvImportExcelSheet.setOnClickListener(new View.OnClickListener() {
@@ -164,7 +149,10 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             public void onClick(View v) {
                 getGroupList();
                 globalGroupName = groupNameSpinner.getSelectedItem().toString();
-                openFilePicker();
+                if (globalGroupName != null) {
+                    openFilePicker();
+                }
+
             }
         });
 
@@ -173,9 +161,12 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             public void onClick(View v) {
                 //  btnGetContactsFromDevice();
                 globalGroupName = groupNameSpinner.getSelectedItem().toString();
-                Intent intent = new Intent(MainActivity.this, ShowContactsList.class);
-                intent.putExtra("groupname", globalGroupName);
-                startActivity(intent);
+                if (globalGroupName != null) {
+                    Intent intent = new Intent(MainActivity.this, ShowContactsList.class);
+                    intent.putExtra("groupname", globalGroupName);
+                    startActivity(intent);
+                }
+
 
             }
         });
@@ -183,14 +174,16 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             @Override
             public void onClick(View v) {
                 globalGroupName = groupNameSpinner.getSelectedItem().toString();
-                Intent intent = new Intent(MainActivity.this, AddGroups.class);
+                if (globalGroupName != null) {
+                    Intent intent = new Intent(MainActivity.this, AddGroups.class);
                 /*Pair[] pairs = new Pair[1];
                 pairs[0] = new Pair<View, String>(tvaddgrp, "tv_addGroup");
                 ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, pairs);
 
                 startActivity(intent, activityOptions.toBundle());*/
+                    startActivity(intent);
+                }
 
-                startActivity(intent);
             }
         });
 
@@ -278,72 +271,53 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
             for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
                 Row row = sheet.getRow(rowIndex);
-
                 String name = getStringCellValue(row, nameColumnIndex);
                 String mobileNumber = getStringCellValue(row, mobileNumberColumnIndex);
                 double mobileNumberRegular = Double.parseDouble(mobileNumber);
                 DecimalFormat decimalFormat = new DecimalFormat("#");
                 String formattedNumber = decimalFormat.format(mobileNumberRegular);
-
-
                 ExcelDataModel excelDataModel = new ExcelDataModel(name, String.valueOf(formattedNumber));
+                excelList.add(excelDataModel);
 
-                if (posibleSize < 200 && posibleSize > 0) {
-                    ////////////////////////////////to check if recored alredy exist
-                    boolean isNamePresent = false;
-                    for (ContactModel contact : group1Records) {
-                        if (contact.getNumber().equals(mobileNumber)) {
-                            // isNamePresent = true;
-                            //  break;
-                            //Toast.makeText(this, "Already Exist...!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            if (excelList.size() < 200) {
-                                excelList.add(excelDataModel);
-                                posibleSize--;
-                            }
-
-                        }
-                    }
-//                    if (!isNamePresent) {
-//                        excelList.add(excelDataModel);
-//                        posibleSize--;
+            }
+            ArrayList<ExcelDataModel> filterList = new ArrayList<>();
+            Boolean isNumberExist = false;
+//            for (ExcelDataModel excelDataModel : excelList) {
+//                isNumberExist=group1Records.contains(new ExcelDataModel(excelDataModel.getMobno()));
+//                if (isNumberExist) {
 //
-//                    } else {
-//                        /// w // Toast.makeText(this, "Already Exist...!", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    if (posibleSize > 0 && group1Records.size() < 200) {
+//                        filterList.add(excelDataModel);
+//                        posibleSize--;
 //                    }
-                    ////////////////////////////////
-
-                } else if (group1Records == null) {
-                    if (excelList.size() < 200) {
-                        excelList.add(excelDataModel);
-                    }
-
+//                }
+//            }
+            // Check if mobile numbers from list1 exist in list2
+            for (ExcelDataModel item1 : excelList) {
+                if (isMobileNumberInList(item1.getMobno(), group1Records)) {
+                    System.out.println("Mobile number " + item1.getMobno() + " exists in the second list.");
                 } else {
-                    // Toast.makeText(this, "Group Is Full..!", Toast.LENGTH_SHORT).show();
+                    System.out.println("Mobile number " + item1.getMobno() + " does not exist in the second list.");
+                    if (posibleSize > 0 && group1Records.size() < 200) {
+                        filterList.add(item1);
+                        posibleSize--;
+                    }
                 }
-
-
             }
 
 
-            if (excelList.size() == 0) {
-                Toast.makeText(this, "No, Only 200 Contacts Improts", Toast.LENGTH_LONG).show();
+            if (filterList.size() == 0) {
+                Toast.makeText(this, "No new record found!", Toast.LENGTH_LONG).show();
             } else {
-                for (int i = 0; i < excelList.size(); i++) {
-                    String name = excelList.get(i).getName();
-                    String mobNo = excelList.get(i).getMobno();
-                    // String fId = groupNameSpinnerInShowList.getSelectedItem().toString();
-                    // Integer possibleSize = 200 - group1Records.size();
-                    //if (i <= 200) {
+                for (int i = 0; i < filterList.size(); i++) {
+                    String name = filterList.get(i).getName();
+                    String mobNo = filterList.get(i).getMobno();
                     Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, globalGroupName);
                     if (isInsertedGroupNumber == true) {
-                        if (i == excelList.size() - 1) {
+                        if (i == filterList.size() - 1) {
                             Toast.makeText(MainActivity.this, "Import Excel Contacts Susccessfully...!", Toast.LENGTH_SHORT).show();
                         }
-
-                        // } else {
-                        //     Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
-                        // }
                     } else {
                         Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
                     }
@@ -351,25 +325,20 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 }
             }
 
-            /*if (excelList.size() <= 200) {
-
-            } else {
-                Toast.makeText(this, "Limit Excceds! \n only 200 contatcs improrted successfully!", Toast.LENGTH_SHORT).show();
-            }*/
-
-
-            // Set the list to the adapter
-            //adapterPhoneContacts.setContactList(excelList);
-            /*recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-            adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
-            recyclerView.setAdapter(adapterPhoneContacts);
-            adapterPhoneContacts.notifyDataSetChanged();*/
-
             workbook.close();
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "Error reading Excel file", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private static boolean isMobileNumberInList(String number, List<ContactModel> list) {
+        for (ContactModel item : list) {
+            if (number.equals(item.getNumber())) {
+                return true; // Mobile number found in the list
+            }
+        }
+        return false; // Mobile number not found in the list
     }
 
     private int findColumnIndex(Row headerRow, String columnName) {
@@ -416,75 +385,37 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         for (ModelGroupName modelGroupName : groupNameList) {
             onlyGroupName.add(modelGroupName.GroupName);
         }
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, onlyGroupName);
-        arrayAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
-        groupNameSpinner.setAdapter(arrayAdapter);
 
-        //to add numbers
-        groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+        if (onlyGroupName.isEmpty()) {
+            Intent intent = new Intent(MainActivity.this, AddGroups.class);
+            startActivity(intent);
+            finish();
+        } else {
+            ArrayAdapter arrayAdapter = new ArrayAdapter(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, onlyGroupName);
+            arrayAdapter.setDropDownViewResource(androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
+            groupNameSpinner.setAdapter(arrayAdapter);
+
+            //to add numbers
+            groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
 
 
-        groupNameSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            groupNameSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    tvGroupName.setText(groupNameSpinner.getSelectedItem().toString());
 
-                tvGroupName.setText(groupNameSpinner.getSelectedItem().toString());
-               /* Map<String, List<ContactModel>> groupedMap = new HashMap<>();
-                String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+                    getGroupList();
 
-                for (ContactModel contactModel : groupNumbersList) {
-                    String groupName = contactModel.id;
 
-                    if (groupedMap.containsKey(groupName)) {
-                        groupedMap.get(contactModel.id).add(contactModel);
-                    } else {
-                        // groupNameWiseList.add(contactModel);
-                        ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
-                        groupNameWiseList.add(contactModel);
-                        groupedMap.put(groupName, groupNameWiseList);
-                    }
                 }
-                group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
 
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
-                //
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
-                recyclerView.setAdapter(adapterPhoneContacts);
-                if (group1Records != null) {
-                    posibleSize = 200 - group1Records.size();
-                }*/
-                getGroupList();
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-
-        //to make a seprate list of same group names
-        /*Map<String, List<ContactModel>> groupedMap = new HashMap<>();
-        String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
-        for (ContactModel contactModel : groupNumbersList) {
-            String groupName = contactModel.id;
-
-            if (groupedMap.containsKey(groupName)) {
-                groupedMap.get(contactModel.id).add(contactModel);
-            } else {
-                // groupNameWiseList.add(contactModel);
-                ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
-                groupNameWiseList.add(contactModel);
-                groupedMap.put(groupName, groupNameWiseList);
-            }
+                }
+            });
         }
-        ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
 
-
-       */
     }
 
     @Override
@@ -501,21 +432,22 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
     @Override
     public void onDeleteClick(int position) {
 
-        groupDATABASE.deleteGroupNumber(position);
+       /* groupDATABASE.deleteGroupNumber(position);
         AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
         adapterAddedPhoneContacts.notifyItemRemoved(position);
-        makeseprateListAndSet();
+        makeseprateListAndSet();*/
         //  arrayListofusers.remove(position);
-       /* AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Delete Contact");
         alert.setMessage("Are you sure you want to delete?");
         alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                *//*groupDATABASE.deleteGroupNumber(position);
+                groupDATABASE.deleteGroupNumber(position);
                 AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
                 adapterAddedPhoneContacts.notifyItemRemoved(position);
-                makeseprateListAndSet();*//*
+                makeseprateListAndSet();
+                getGroupList();
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -524,7 +456,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 dialog.cancel();
             }
         });
-        alert.show();*/
+        alert.show();
     }
 
 
@@ -612,6 +544,15 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         }
         group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
 
+        //
+        if (group1Records != null) {
+            String sizeOfGroup = String.valueOf(group1Records.size());
+            tvdisaplyCountOfGroup.setText("(" + sizeOfGroup + ")");
+        } else {
+            tvdisaplyCountOfGroup.setText("(" + "0" + ")");
+        }
+        //
+
 
         //
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
@@ -660,33 +601,73 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             if (group1Records != null) {
                 if (group1Records.size() < 200) {
                     //
+
                     for (ContactModel contact : group1Records) {
-                        if (contact.getNumber().equals(mobNo)) {
-                            Toast.makeText(MainActivity.this, "Number Alreday Exist...!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            getGroupList();
-                            if (group1Records.size() < 200) {
-                                if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
-                                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
-                                    if (isInsertedGroupNumber == true) {
-                                        etname.setText("");
-                                        etnumber.setText("");
-                                        Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
+                        getGroupList();
+                        if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
+                            if (contact.getNumber().equals(mobNo)) {
+                                Toast.makeText(MainActivity.this, "Number Alreday Exist...!", Toast.LENGTH_SHORT).show();
+                            } else {
+
+                                if (group1Records.size() < 200) {
+                                    if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
+                                        Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
+                                        if (isInsertedGroupNumber == true) {
+                                            etname.setText("");
+                                            etnumber.setText("");
+                                            name = "";
+                                            mobNo = "";
+                                            ///
+                                            Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+                                            String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+
+                                            for (ContactModel contactModel : groupNumbersList) {
+                                                String groupName = contactModel.id;
+
+                                                if (groupedMap.containsKey(groupName)) {
+                                                    groupedMap.get(contactModel.id).add(contactModel);
+                                                } else {
+                                                    // groupNameWiseList.add(contactModel);
+                                                    ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+                                                    groupNameWiseList.add(contactModel);
+                                                    groupedMap.put(groupName, groupNameWiseList);
+                                                }
+                                            }
+                                            group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
+
+                                            //
+                                            if (group1Records != null) {
+                                                String sizeOfGroup = String.valueOf(group1Records.size());
+                                                if (sizeOfGroup.equals("1")) {
+                                                    tvdisaplyCountOfGroup.setText("(" + 2 + ")");
+                                                } else {
+                                                    getGroupList();
+                                                }
+
+
+                                            } else {
+                                                tvdisaplyCountOfGroup.setText("(" + "0" + ")");
+                                            }
+                                            ////
+                                            Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
+
+
                                     } else {
-                                        Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
                                     }
-
-                                    //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
-
-
-                                } else {
-                                    Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
+                                    makeseprateListAndSet();
                                 }
-                                makeseprateListAndSet();
-                            }
 
+                            }
                         }
                     }
+
+
                     //
 
                 } else {
@@ -700,6 +681,33 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                         etname.setText("");
                         etnumber.setText("");
                         Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
+                        //  getGroupList();
+                        //
+                        Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+                        String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+
+                        for (ContactModel contactModel : groupNumbersList) {
+                            String groupName = contactModel.id;
+
+                            if (groupedMap.containsKey(groupName)) {
+                                groupedMap.get(contactModel.id).add(contactModel);
+                            } else {
+                                // groupNameWiseList.add(contactModel);
+                                ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+                                groupNameWiseList.add(contactModel);
+                                groupedMap.put(groupName, groupNameWiseList);
+                            }
+                        }
+                        group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
+
+                        //
+                        if (group1Records != null) {
+                            String sizeOfGroup = String.valueOf(group1Records.size());
+                            tvdisaplyCountOfGroup.setText("(" + sizeOfGroup + ")");
+                        } else {
+                            tvdisaplyCountOfGroup.setText("(" + "1" + ")");
+                        }
+                        //
                     } else {
                         Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
                     }
@@ -721,4 +729,5 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             Toast.makeText(this, "Invalid Mobile Number!", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

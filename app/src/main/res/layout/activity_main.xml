@@ -192,8 +192,8 @@
                 android:id="@+id/etContactNumber"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:maxLength="10"
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:maxLength="10" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -217,13 +217,16 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="10dp"
+        android:weightSum="3"
         app:layout_constraintTop_toBottomOf="@+id/llofContactNumber">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:maxLines="2"
             android:text="Group Name :"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -231,10 +234,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_weight="3"
             android:gravity="center_vertical"
+            android:maxLines="2"
             android:text="Both 1"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvdisaplyCountOfGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity=""
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Count"
+            android:textSize="18sp" />
 
 
     </LinearLayout>

@@ -1,5 +1,7 @@
 package com.example.contactlist;
 
+import java.util.Objects;
+
 public class ExcelDataModel {
     String name,mobno;
 
@@ -9,6 +11,9 @@ public class ExcelDataModel {
     }
 
     public ExcelDataModel() {
+    }
+
+    public ExcelDataModel(String mobno) {
     }
 
     public String getName() {
@@ -25,5 +30,12 @@ public class ExcelDataModel {
 
     public void setMobno(String mobno) {
         this.mobno = mobno;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ExcelDataModel model = (ExcelDataModel) obj;
+        return Objects.equals(mobno, model.mobno);
     }
 }

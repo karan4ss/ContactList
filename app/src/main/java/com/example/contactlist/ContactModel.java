@@ -1,5 +1,7 @@
 package com.example.contactlist;
 
+import java.util.Objects;
+
 public class ContactModel extends ContactAddedModelClass {
     String grpnumberid, id, name, number;
     boolean isselectContact;
@@ -11,6 +13,9 @@ public class ContactModel extends ContactAddedModelClass {
     }
 
     public ContactModel() {
+    }
+
+    public ContactModel(String name) {
     }
 
     public String getGrpnumberid() {
@@ -51,5 +56,13 @@ public class ContactModel extends ContactAddedModelClass {
 
     public void setIsselectContact(boolean isselectContact) {
         this.isselectContact = isselectContact;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ContactModel contactModel = (ContactModel) obj;
+        return Objects.equals(phone_number, contactModel.phone_number);
     }
 }

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -77,11 +78,20 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
             @Override
             public void onClick(View v) {
                 String groupName = etGroupName.getText().toString();
-                if (groupName != null) {
+                if (groupName != null && !groupName.equals("") && !groupName.isEmpty()) {
                     if (!groupDATABASE.isNameExists(groupName)) {
                         Boolean isInsertedGroup = groupDATABASE.insert_grp_name(groupName);
                         if (isInsertedGroup) {
                             Toast.makeText(AddGroups.this, "Group Created...!", Toast.LENGTH_SHORT).show();
+                            groupNameList = groupDATABASE.getAllData();
+                            rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
+                            adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
+                            rvGroupNames.setAdapter(adapterGroupNames);
+                            if (groupNameList.size() == 1) {
+                                Intent intent = new Intent(AddGroups.this, MainActivity.class);
+                                startActivity(intent);
+                            }
+
                         } else {
                             Toast.makeText(AddGroups.this, "Failed to Create Group...!", Toast.LENGTH_SHORT).show();
                         }
@@ -89,11 +99,10 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
                         Toast.makeText(AddGroups.this, "Already Exist...!", Toast.LENGTH_SHORT).show();
                     }
 
+                } else {
+                    Toast.makeText(AddGroups.this, "Plase Enter Group Name!", Toast.LENGTH_SHORT).show();
                 }
-                groupNameList = groupDATABASE.getAllData();
-                rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
-                adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
-                rvGroupNames.setAdapter(adapterGroupNames);
+
             }
         });
 
@@ -109,29 +118,29 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
     }
 
     @Override
-    public void onDeleteClick(int position,String group_name) {
+    public void onDeleteClick(int position, String group_name) {
         // groupDATABASE.deleteGroup(position);
         //groupNameList.remove(position);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Delete Group");
-        alert.setMessage("Are you sure you want to delete?");
+        alert.setTitle("Delete Group" + " " + group_name);
+        alert.setMessage("Are you sure to delete ?");
         alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                Boolean isDeleteGroupName= groupDATABASE.deleteGroup(Integer.parseInt(String.valueOf(position)));
-                if (isDeleteGroupName){
+                Boolean isDeleteGroupName = groupDATABASE.deleteGroup(Integer.parseInt(String.valueOf(position)));
+                if (isDeleteGroupName) {
                     //to delete group data
 
-                    Boolean isDeleted = groupDATABASE.delete_data_of_grouprecords(position,group_name);
+                    Boolean isDeleted = groupDATABASE.delete_data_of_grouprecords(position, group_name);
                     if (isDeleted) {
                         Toast.makeText(AddGroups.this, "Delete group data Successfully!", Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         Toast.makeText(AddGroups.this, "Failed to delete data", Toast.LENGTH_SHORT).show();
                     }
                     //
-                }else {
+                } else {
                     Toast.makeText(AddGroups.this, "Faild To Delete Groupname!", Toast.LENGTH_SHORT).show();
                 }
 

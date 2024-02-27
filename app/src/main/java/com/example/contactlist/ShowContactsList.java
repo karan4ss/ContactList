@@ -18,9 +18,11 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,14 +51,33 @@ public class ShowContactsList extends AppCompatActivity implements AdapterPhoneC
 
     ArrayList<ContactAddedModelClass> arraylistofselectedusers = new ArrayList<ContactAddedModelClass>();
     String groupname;
+    ImageView ivBackInToolbar;
+    TextView tvTitlteInToolbar;
+    androidx.appcompat.widget.Toolbar myToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_contacts_list);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        myToolbar = (androidx.appcompat.widget.Toolbar) findViewById(R.id.my_toolbar);
+        View customToolbar = inflater.inflate(R.layout.custom_toolbar, myToolbar, false);
+        myToolbar.addView(customToolbar);
+        ivBackInToolbar = customToolbar.findViewById(R.id.ivBackInToolbar);
+        tvTitlteInToolbar = customToolbar.findViewById(R.id.tvTitlteInToolbar);
+        tvTitlteInToolbar.setText("Search Contacts");
+        ivBackInToolbar.setVisibility(View.VISIBLE);
+        ivBackInToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         rvContactFromPhone = findViewById(R.id.rvOfPhoneContactList);
         btnAddSingleContacts = findViewById(R.id.btnAddSingleContacts);
         tvofGropuNameInShowList = findViewById(R.id.tvofGropuNameInShowList);
+
         etSearch = findViewById(R.id.etSearchContact);
         checkSelfPermission();
         groupname = getIntent().getStringExtra("groupname");
