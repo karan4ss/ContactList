@@ -310,8 +310,11 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             } else {
                 if (posibleSize > 0) {
                     for (ExcelDataModel item : excelList) {
-                        filterList.add(item);
-                        posibleSize--;
+                        if (posibleSize >= 0) {
+                            filterList.add(item);
+                            posibleSize--;
+                        }
+
                     }
 
                 }
