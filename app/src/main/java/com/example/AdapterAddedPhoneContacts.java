@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.contactlist.ContactAddedModelClass;
 import com.example.contactlist.ContactModel;
 import com.example.contactlist.ExcelDataModel;
+import com.example.contactlist.ModelGroupName;
 import com.example.contactlist.R;
 
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
     ArrayList<ContactModel> arrayListOfAddeduser;
     private OnDeleteClickListener onDeleteClickListener;
 
+    public AdapterAddedPhoneContacts() {
+    }
+
     public AdapterAddedPhoneContacts(Activity activity, ArrayList<ContactModel> arrayListofaddedUsers) {
         this.activity = activity;
         this.arrayListOfAddeduser = arrayListofaddedUsers;
@@ -35,7 +39,13 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
         this.activity = activity;
         this.arrayListOfAddeduser = arrayListOfAddeduser;
         this.onDeleteClickListener = onDeleteClickListener;
+
     }
+    public void setData(ArrayList<ContactModel> data) {
+        this.arrayListOfAddeduser = data;
+        notifyDataSetChanged();
+    }
+
 
     @NonNull
     @Override

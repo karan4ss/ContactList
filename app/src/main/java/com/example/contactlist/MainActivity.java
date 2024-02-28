@@ -58,10 +58,8 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
     AppCompatButton btnAddContacts;
     ImageView imgImportContacts, imgaddGrups;
     RecyclerView recyclerView;
-
     AdapterAddedPhoneContacts adapterPhoneContacts;
     ArrayList<ContactAddedModelClass> manualAddedList = new ArrayList();
-    ArrayList<ContactAddedModelClass> arrayListofusers = new ArrayList();
     Boolean flag = false;
     AppCompatEditText etname, etnumber;
     ArrayList<ModelGroupName> groupNameList;
@@ -102,9 +100,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         Intent intent = getIntent();
 
         flag = intent.getBooleanExtra("addContacts", false);
-        List<ContactAddedModelClass> selectedItems = getIntent().getParcelableArrayListExtra("selectedItems");
-
-        String[] groups = {"Group 1", "Group 2", "Group 3", "Group 4", "Group 5", "Group 6"};
+        //List<ContactAddedModelClass> selectedItems = getIntent().getParcelableArrayListExtra("selectedItems");
         groupNameSpinner = findViewById(R.id.spinnerOfGropuName);
         tvGroupName = findViewById(R.id.tvGroupName);
         btnAddContacts = findViewById(R.id.btnAddContacts);
@@ -135,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
                     } else {
                         /// animateLinearLayoutVisibility();
-
                         Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slideanimationfromtoptobottom);
                         llofaddcontactsedittexts.startAnimation(animation);
                         llofaddcontactsedittexts.setVisibility(View.VISIBLE);
@@ -187,21 +182,18 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             }
         });
 
-        if (selectedItems != null) {
-            manualAddedList.addAll(selectedItems);
-            recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-            adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
-            recyclerView.setAdapter(adapterPhoneContacts);
-        }
+//        if (selectedItems != null) {
+//            manualAddedList.addAll(selectedItems);
+//            recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//            adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
+//            recyclerView.setAdapter(adapterPhoneContacts);
+//        }
 
 
         btnAddContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 validateMobileNumber(etnumber.getText().toString());
-
-
             }
         });
 
@@ -214,24 +206,9 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 Uri uri = data.getData();
-                /*List<ExcelDataModel> excelDataList = readExcelData(uri);
-                for (int i = 0; i < excelDataList.size(); i++) {
-                    String name = excelDataList.get(i).getName();
-                    String mobNo = excelDataList.get(i).getMobno();
-                    String fId = groupNameSpinner.getSelectedItem().toString();
-                    Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
-                    if (isInsertedGroupNumber == true) {
-                        Toast.makeText(MainActivity.this, "Imported Excel Contacts...!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(MainActivity.this, "Failed To Import Excel Contacts...!", Toast.LENGTH_SHORT).show();
-                    }
-                }*/
                 if (uri != null) {
-
                     processExcelFile(uri);
                 }
-
-
             }
         }
     }
@@ -281,19 +258,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
             }
             ArrayList<ExcelDataModel> filterList = new ArrayList<>();
-            Boolean isNumberExist = false;
-//            for (ExcelDataModel excelDataModel : excelList) {
-//                isNumberExist=group1Records.contains(new ExcelDataModel(excelDataModel.getMobno()));
-//                if (isNumberExist) {
-//
-//                } else {
-//                    if (posibleSize > 0 && group1Records.size() < 200) {
-//                        filterList.add(excelDataModel);
-//                        posibleSize--;
-//                    }
-//                }
-//            }
-            // Check if mobile numbers from list1 exist in list2
+
             if (group1Records != null) {
                 for (ExcelDataModel item1 : excelList) {
                     if (isMobileNumberInList(item1.getMobno(), group1Records)) {
@@ -349,10 +314,10 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
     private static boolean isMobileNumberInList(String number, List<ContactModel> list) {
         for (ContactModel item : list) {
             if (number.equals(item.getNumber())) {
-                return true; // Mobile number found in the list
+                return true; // found
             }
         }
-        return false; // Mobile number not found in the list
+        return false; // not found
     }
 
     private int findColumnIndex(Row headerRow, String columnName) {
@@ -410,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             groupNameSpinner.setAdapter(arrayAdapter);
 
             //to add numbers
+            // groupNumbersList.clear();
             groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
 
 
@@ -445,23 +411,23 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
     @Override
     public void onDeleteClick(int position) {
-
-       /* groupDATABASE.deleteGroupNumber(position);
-        AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
-        adapterAddedPhoneContacts.notifyItemRemoved(position);
-        makeseprateListAndSet();*/
-        //  arrayListofusers.remove(position);
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Delete Contact");
         alert.setMessage("Are you sure you want to delete?");
         alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                //groupNumbersList.remove(position);
                 groupDATABASE.deleteGroupNumber(position);
-                AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, groupNumbersList, MainActivity.this);
-                adapterAddedPhoneContacts.notifyItemRemoved(position);
-                makeseprateListAndSet();
-                getGroupList();
+                //AdapterAddedPhoneContacts adapterAddedPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
+                //adapterAddedPhoneContacts.notifyItemRemoved(position);
+                // adapterAddedPhoneContacts.notifyItemRangeChanged(position, groupNumbersList.size() - position);
+
+
+                // makeseprateListAndSet();
+                getGroupListNew();
+                //getGroupList();
+                //adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -475,6 +441,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 
 
     public void makeseprateListAndSet() {
+        groupNumbersList.clear();
         groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
 
         Map<String, List<ContactModel>> groupedMap = new HashMap<>();
@@ -565,10 +532,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         } else {
             tvdisaplyCountOfGroup.setText("(" + "0" + ")");
         }
-        //
 
-
-        //
         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
         adapterPhoneContacts = new AdapterAddedPhoneContacts(MainActivity.this, group1Records, MainActivity.this);
         recyclerView.setAdapter(adapterPhoneContacts);
@@ -579,31 +543,42 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         }
     }
 
-    /*  private List<ExcelDataModel> readExcelData(Uri uri) {
-          List<ExcelDataModel> excelDataList = new ArrayList<>();
+    public void getGroupListNew() {
+        groupNumbersList.clear();
+        groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
 
-          try (InputStream inputStream = getContentResolver().openInputStream(uri)) {
-              Workbook workbook = WorkbookFactory.create(inputStream);
-              Sheet sheet = workbook.getSheetAt(0); // Assuming data is on the first sheet
+        Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+        String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
+        for (ContactModel contactModel : groupNumbersList) {
+            String groupName = contactModel.id;
 
-              for (Row row : sheet) {
-                  ExcelDataModel excelData = new ExcelDataModel();
-                  Cell cell1 = row.getCell(0); // Adjust index based on your Excel columns
-                  excelData.setName(cell1.getStringCellValue());
-                  Cell cell2 = row.getCell(1);
-                  excelData.setMobno(cell2.getStringCellValue());
-                  // Add more lines for additional columns
+            if (groupedMap.containsKey(groupName)) {
+                groupedMap.get(contactModel.id).add(contactModel);
+            } else {
+                // groupNameWiseList.add(contactModel);
+                ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
+                groupNameWiseList.add(contactModel);
+                groupedMap.put(groupName, groupNameWiseList);
+            }
+        }
+        ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
 
-                  excelDataList.add(excelData);
-              }
+        adapterPhoneContacts.setData(group1Records);
 
-              workbook.close();
-          } catch (IOException e) {
-              e.printStackTrace();
-          }
+        if (group1Records != null) {
+            String sizeOfGroup = String.valueOf(group1Records.size());
+            tvdisaplyCountOfGroup.setText("(" + sizeOfGroup + ")");
+        } else {
+            tvdisaplyCountOfGroup.setText("(" + "0" + ")");
+        }
 
-          return excelDataList;
-      }*/
+        if (group1Records != null) {
+            posibleSize = 200 - group1Records.size();
+        } else {
+            posibleSize = 199;
+        }
+    }
+
     private void validateMobileNumber(String mobileNumber) {
         String regex = "^[0-9]{10}$"; // Regular expression for 10 digits
         if (mobileNumber.matches(regex)) {
@@ -614,22 +589,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             String fId = groupNameSpinner.getSelectedItem().toString();
             if (group1Records != null) {
                 if (group1Records.size() < 200) {
-//                    for (ContactModel contactModel : group1Records) {
-//                        if (isMobileNumberInList(mobNo, group1Records)) {
-//                            System.out.println("Mobile number " + contactModel.getNumber() + " exists in the second list.");
-//                        } else {
-//                            System.out.println("Mobile number " + contactModel.getNumber() + " does not exist in the second list.");
-//                            if (group1Records.size() < 200) {
-//
-//                            }
-//                        }
-//                    }
-
-
-                    // }
                     if (!mobileNumber.isEmpty()) {
-
-                        //////////////////////////////////
                         boolean phoneNumberExists = false;
                         for (ContactModel groupItem : group1Records) {
                             if (groupItem.getNumber().equals(mobileNumber)) {
@@ -637,29 +597,24 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                                 break;
                             }
                         }
-
                         if (phoneNumberExists) {
-                            // Phone number exists in the groupList
                             Toast.makeText(this, "Phone number already exists in the group list", Toast.LENGTH_SHORT).show();
                         } else {
-                            // Phone number does not exist in the groupList
-                            // Toast.makeText(this, "Phone number is not in the group list", Toast.LENGTH_SHORT).show();
                             Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
                             if (isInsertedGroupNumber) {
                                 Toast.makeText(this, "Successfully Added!", Toast.LENGTH_SHORT).show();
                                 etname.setText("");
                                 etnumber.setText("");
 
-                                makeseprateListAndSet();
-                                getGroupList();
-                                /*if (group1Records != null) {
-                                    Integer sizeOfGroup =(group1Records.size() +1);
-                                    tvdisaplyCountOfGroup.setText("(" + sizeOfGroup + ")");
-                                }*/
+                                // makeseprateListAndSet();
+                                getGroupListNew();
+
+
+                                recyclerView.scrollToPosition(adapterPhoneContacts.getItemCount() - 1);
+
                             }
 
                         }
-                        ////////////////////////////////////
 
                     }
 
@@ -667,7 +622,6 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                     Toast.makeText(MainActivity.this, "No, Only add 200 Contacts In Group.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                // if (group1Records.size() < 200) {
                 if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
                     Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
                     if (isInsertedGroupNumber == true) {
@@ -703,7 +657,6 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                 } else {
                     Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
                 }
-                //makeseprateListAndSet();
             }
 
         } else {

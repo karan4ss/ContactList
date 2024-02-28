@@ -83,10 +83,12 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
                         Boolean isInsertedGroup = groupDATABASE.insert_grp_name(groupName);
                         if (isInsertedGroup) {
                             Toast.makeText(AddGroups.this, "Group Created...!", Toast.LENGTH_SHORT).show();
+                            etGroupName.setText("");
                             groupNameList = groupDATABASE.getAllData();
                             rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
                             adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
                             rvGroupNames.setAdapter(adapterGroupNames);
+                            rvGroupNames.scrollToPosition(adapterGroupNames.getItemCount() - 1);
                             if (groupNameList.size() == 1) {
                                 Intent intent = new Intent(AddGroups.this, MainActivity.class);
                                 startActivity(intent);
@@ -136,6 +138,9 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
                     Boolean isDeleted = groupDATABASE.delete_data_of_grouprecords(position, group_name);
                     if (isDeleted) {
                         Toast.makeText(AddGroups.this, "Delete group data Successfully!", Toast.LENGTH_SHORT).show();
+                        adapterGroupNames.notifyItemRemoved(position);
+                        groupNameList = groupDATABASE.getAllData();
+                        adapterGroupNames.setData(groupNameList);
                     } else {
                         Toast.makeText(AddGroups.this, "Failed to delete data", Toast.LENGTH_SHORT).show();
                     }
@@ -145,14 +150,14 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
                 }
 
 
-                AdapterGroupNames adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, AddGroups.this);
-                adapterGroupNames.notifyItemRemoved(position);
-
-
-                groupNameList = groupDATABASE.getAllData();
-                rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
-                adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
-                rvGroupNames.setAdapter(adapterGroupNames);
+//                AdapterGroupNames adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, AddGroups.this);
+//                adapterGroupNames.notifyItemRemoved(position);
+//
+//
+//                groupNameList = groupDATABASE.getAllData();
+//                rvGroupNames.setLayoutManager(new LinearLayoutManager(AddGroups.this));
+//                adapterGroupNames = new AdapterGroupNames(AddGroups.this, groupNameList, (AdapterGroupNames.OnDeleteClickListener) AddGroups.this);
+//                rvGroupNames.setAdapter(adapterGroupNames);
 
 
             }

@@ -35,6 +35,10 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
         this.onDeleteClickListener = onDeleteClickListener;
         this.context = context;
     }
+    public void setData(ArrayList<ModelGroupName> data) {
+        this.group_list = data;
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
