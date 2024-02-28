@@ -294,21 +294,32 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
 //                }
 //            }
             // Check if mobile numbers from list1 exist in list2
-            for (ExcelDataModel item1 : excelList) {
-                if (isMobileNumberInList(item1.getMobno(), group1Records)) {
-                    System.out.println("Mobile number " + item1.getMobno() + " exists in the second list.");
-                } else {
-                    System.out.println("Mobile number " + item1.getMobno() + " does not exist in the second list.");
-                    if (posibleSize > 0 && group1Records.size() < 200) {
-                        filterList.add(item1);
+            if (group1Records != null) {
+                for (ExcelDataModel item1 : excelList) {
+                    if (isMobileNumberInList(item1.getMobno(), group1Records)) {
+                        System.out.println("Mobile number " + item1.getMobno() + " exists in the second list.");
+                    } else {
+                        System.out.println("Mobile number " + item1.getMobno() + " does not exist in the second list.");
+                        if (posibleSize > 0 && group1Records.size() < 200) {
+                            filterList.add(item1);
+                            posibleSize--;
+                        }
+                    }
+                }
+
+            } else {
+                if (posibleSize > 0) {
+                    for (ExcelDataModel item : excelList) {
+                        filterList.add(item);
                         posibleSize--;
                     }
+
                 }
             }
 
 
             if (filterList.size() == 0) {
-                Toast.makeText(this, "No new record found!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Already Exist! OR  only add 200 records", Toast.LENGTH_LONG).show();
             } else {
                 for (int i = 0; i < filterList.size(); i++) {
                     String name = filterList.get(i).getName();
@@ -560,6 +571,8 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
         recyclerView.setAdapter(adapterPhoneContacts);
         if (group1Records != null) {
             posibleSize = 200 - group1Records.size();
+        } else {
+            posibleSize = 199;
         }
     }
 
@@ -596,79 +609,56 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             String name = etname.getText().toString();
             String mobNo = etnumber.getText().toString();
             String fId = groupNameSpinner.getSelectedItem().toString();
-
-
             if (group1Records != null) {
                 if (group1Records.size() < 200) {
-                    //
-
-                    for (ContactModel contact : group1Records) {
-                        getGroupList();
-                        if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
-                            if (contact.getNumber().equals(mobNo)) {
-                                Toast.makeText(MainActivity.this, "Number Alreday Exist...!", Toast.LENGTH_SHORT).show();
-                            } else {
-
-                                if (group1Records.size() < 200) {
-                                    if (!name.isEmpty() && !mobNo.isEmpty() && !fId.isEmpty()) {
-                                        Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
-                                        if (isInsertedGroupNumber == true) {
-                                            etname.setText("");
-                                            etnumber.setText("");
-                                            name = "";
-                                            mobNo = "";
-                                            ///
-                                            Map<String, List<ContactModel>> groupedMap = new HashMap<>();
-                                            String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
-
-                                            for (ContactModel contactModel : groupNumbersList) {
-                                                String groupName = contactModel.id;
-
-                                                if (groupedMap.containsKey(groupName)) {
-                                                    groupedMap.get(contactModel.id).add(contactModel);
-                                                } else {
-                                                    // groupNameWiseList.add(contactModel);
-                                                    ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
-                                                    groupNameWiseList.add(contactModel);
-                                                    groupedMap.put(groupName, groupNameWiseList);
-                                                }
-                                            }
-                                            group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
-
-                                            //
-                                            if (group1Records != null) {
-                                                String sizeOfGroup = String.valueOf(group1Records.size());
-                                                if (sizeOfGroup.equals("1")) {
-                                                    tvdisaplyCountOfGroup.setText("(" + 2 + ")");
-                                                } else {
-                                                    getGroupList();
-                                                }
+//                    for (ContactModel contactModel : group1Records) {
+//                        if (isMobileNumberInList(mobNo, group1Records)) {
+//                            System.out.println("Mobile number " + contactModel.getNumber() + " exists in the second list.");
+//                        } else {
+//                            System.out.println("Mobile number " + contactModel.getNumber() + " does not exist in the second list.");
+//                            if (group1Records.size() < 200) {
+//
+//                            }
+//                        }
+//                    }
 
 
-                                            } else {
-                                                tvdisaplyCountOfGroup.setText("(" + "0" + ")");
-                                            }
-                                            ////
-                                            Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
-                                        }
+                    // }
+                    if (!mobileNumber.isEmpty()) {
 
-                                        //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
-
-
-                                    } else {
-                                        Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
-                                    }
-                                    makeseprateListAndSet();
-                                }
-
+                        //////////////////////////////////
+                        boolean phoneNumberExists = false;
+                        for (ContactModel groupItem : group1Records) {
+                            if (groupItem.getNumber().equals(mobileNumber)) {
+                                phoneNumberExists = true;
+                                break;
                             }
                         }
+
+                        if (phoneNumberExists) {
+                            // Phone number exists in the groupList
+                            Toast.makeText(this, "Phone number already exists in the group list", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Phone number does not exist in the groupList
+                            // Toast.makeText(this, "Phone number is not in the group list", Toast.LENGTH_SHORT).show();
+                            Boolean isInsertedGroupNumber = groupDATABASE.insert_grp_number(name, mobNo, fId);
+                            if (isInsertedGroupNumber) {
+                                Toast.makeText(this, "Successfully Added!", Toast.LENGTH_SHORT).show();
+                                etname.setText("");
+                                etnumber.setText("");
+
+                                makeseprateListAndSet();
+                                getGroupList();
+                                /*if (group1Records != null) {
+                                    Integer sizeOfGroup =(group1Records.size() +1);
+                                    tvdisaplyCountOfGroup.setText("(" + sizeOfGroup + ")");
+                                }*/
+                            }
+
+                        }
+                        ////////////////////////////////////
+
                     }
-
-
-                    //
 
                 } else {
                     Toast.makeText(MainActivity.this, "No, Only add 200 Contacts In Group.", Toast.LENGTH_SHORT).show();
@@ -681,9 +671,7 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                         etname.setText("");
                         etnumber.setText("");
                         Toast.makeText(MainActivity.this, "Number Saved Susccessfully...!", Toast.LENGTH_SHORT).show();
-                        //  getGroupList();
-                        //
-                        Map<String, List<ContactModel>> groupedMap = new HashMap<>();
+                        /*Map<String, List<ContactModel>> groupedMap = new HashMap<>();
                         String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
 
                         for (ContactModel contactModel : groupNumbersList) {
@@ -692,36 +680,27 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
                             if (groupedMap.containsKey(groupName)) {
                                 groupedMap.get(contactModel.id).add(contactModel);
                             } else {
-                                // groupNameWiseList.add(contactModel);
                                 ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
                                 groupNameWiseList.add(contactModel);
                                 groupedMap.put(groupName, groupNameWiseList);
                             }
                         }
                         group1Records = (ArrayList<ContactModel>) groupedMap.get(groupNameInspinner);
-
-                        //
                         if (group1Records != null) {
                             String sizeOfGroup = String.valueOf(group1Records.size());
                             tvdisaplyCountOfGroup.setText("(" + sizeOfGroup + ")");
                         } else {
                             tvdisaplyCountOfGroup.setText("(" + "1" + ")");
-                        }
-                        //
+                        }*/
+                        makeseprateListAndSet();
+                        getGroupList();
                     } else {
                         Toast.makeText(MainActivity.this, "Failed To Save...!", Toast.LENGTH_SHORT).show();
                     }
-
-                    //groupNumbersList = groupDATABASE.getAllDataOfGroupNumbers();
-
-
                 } else {
                     Toast.makeText(MainActivity.this, "Please fill all the fields...!", Toast.LENGTH_SHORT).show();
                 }
-                makeseprateListAndSet();
-                // }
-
-
+                //makeseprateListAndSet();
             }
 
         } else {
@@ -729,5 +708,10 @@ public class MainActivity extends AppCompatActivity implements AdapterAddedPhone
             Toast.makeText(this, "Invalid Mobile Number!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private boolean isNumberInList(String number) {
+        return group1Records.contains(number);
+    }
+
 
 }

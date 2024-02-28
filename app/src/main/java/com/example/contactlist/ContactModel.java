@@ -58,11 +58,26 @@ public class ContactModel extends ContactAddedModelClass {
         this.isselectContact = isselectContact;
     }
 
+    //    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj) return true;
+//        if (obj == null || getClass() != obj.getClass()) return false;
+//        ContactModel contactModel = (ContactModel) obj;
+//        return Objects.equals(phone_number, contactModel.phone_number);
+//    }
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        ContactModel contactModel = (ContactModel) obj;
-        return Objects.equals(phone_number, contactModel.phone_number);
+
+        ContactModel other = (ContactModel) obj;
+        // Compare relevant fields for equality
+        return Objects.equals(this.name, other.name) &&
+                Objects.equals(this.phone_number, other.phone_number);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, phone_number);
     }
 }
