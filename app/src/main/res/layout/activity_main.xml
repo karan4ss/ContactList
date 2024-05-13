@@ -173,7 +173,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contact Name"
-            android:padding="10dp">
+            android:padding="10dp"
+            android:visibility="gone">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etContactName"
@@ -184,16 +185,20 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contact Number"
+            android:layout_height="200dp"
+            android:hint="Paste mobile numbers here"
             android:padding="10dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etContactNumber"
+                android:id="@+id/etnumber"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="phone"
-                android:maxLength="10" />
+                android:gravity="start"
+                android:inputType="textMultiLine"
+                android:lineBreakStyle="normal"
+                android:maxLines="500"
+                android:padding="5dp"
+                android:scrollbars="vertical" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -207,7 +212,7 @@
             android:backgroundTint="#CDC5C5"
             android:padding="10dp"
             android:src="@drawable/ic_contact"
-            android:text="Add"
+            android:text="Add to Group"
             android:textStyle="bold" />
     </LinearLayout>
 

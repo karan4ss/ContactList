@@ -20,8 +20,7 @@ import android.widget.Toast;
 import com.example.AdapterAddedPhoneContacts;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
-
-import org.apache.commons.math3.analysis.function.Add;
+//import org.apache.commons.math3.analysis.function.Add;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,7 +132,7 @@ public class AddGroups extends AppCompatActivity implements AdapterGroupNames.On
 
                 Boolean isDeleteGroupName = groupDATABASE.deleteGroup(Integer.parseInt(String.valueOf(position)));
                 if (isDeleteGroupName) {
-                    //to delete group data
+
 
                     Boolean isDeleted = groupDATABASE.delete_data_of_grouprecords(position, group_name);
                     if (isDeleted) {

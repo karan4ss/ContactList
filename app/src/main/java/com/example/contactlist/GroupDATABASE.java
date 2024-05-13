@@ -43,7 +43,8 @@ public class GroupDATABASE extends SQLiteOpenHelper {
                 " (" + GRP_NUM_ID + " INTEGER PRIMARY KEY  AUTOINCREMENT, "
                 + CONTACT_NAME + " ,"
                 + CONTACT + "  NOT NULL ,"
-                + FOREIGN_GRP_ID + " NOT NULL" +
+                + FOREIGN_GRP_ID + " NOT NULL"+
+
                 ")"
         );
 
@@ -88,6 +89,7 @@ public class GroupDATABASE extends SQLiteOpenHelper {
         cv.put(CONTACT_NAME, c_name);
 
         cv.put(FOREIGN_GRP_ID, fid);
+       // cv.put(GRP_ID, grpid);
 
 
         long result = db.insert(TABLE_GROUP_NUMBER, null, cv);
@@ -212,7 +214,7 @@ public class GroupDATABASE extends SQLiteOpenHelper {
 
     }
 
-    //
+
     public ArrayList<ContactModel> getAllDataOfGroupNumbers() {
 
         try {
@@ -251,9 +253,6 @@ public class GroupDATABASE extends SQLiteOpenHelper {
         }
 
     }
-
-
-    //to get groupname wise data
 
 
     //

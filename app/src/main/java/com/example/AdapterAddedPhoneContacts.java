@@ -1,7 +1,6 @@
 package com.example;
 
 import android.app.Activity;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.contactlist.ContactAddedModelClass;
 import com.example.contactlist.ContactModel;
-import com.example.contactlist.ExcelDataModel;
-import com.example.contactlist.ModelGroupName;
 import com.example.contactlist.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAddedPhoneContacts.ViewHolder> {
     // public static AdapterAddedPhoneContacts.OnDeleteClickListener OnDeleteClickListener;
@@ -41,6 +36,7 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
         this.onDeleteClickListener = onDeleteClickListener;
 
     }
+
     public void setData(ArrayList<ContactModel> data) {
         this.arrayListOfAddeduser = data;
         notifyDataSetChanged();
@@ -58,7 +54,20 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ContactModel contactModel = arrayListOfAddeduser.get(position);
         String groupNumberId = contactModel.getGrpnumberid();
-        holder.tvItemName.setText(contactModel.getName());
+        String originalText = contactModel.getName().toString();
+        int maxCharactersToShow = 20;
+
+        if (originalText.length() > maxCharactersToShow) {
+            String truncatedText = originalText.substring(0, maxCharactersToShow) + "...";
+            holder.tvItemName.setText(truncatedText);
+
+        } else {
+            holder.tvItemName.setText(contactModel.getName());
+
+        }
+
+
+        // holder.tvItemName.setText(contactModel.getName());
         holder.tvItemNumber.setText(contactModel.getNumber());
 
         holder.ivDelete.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +75,7 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
             public void onClick(View v) {
                 //  deleteItem(position);
                 if (onDeleteClickListener != null) {
-                    onDeleteClickListener.onDeleteClick(Integer.parseInt(groupNumberId));
+                    onDeleteClickListener.onDeleteClick(Integer.parseInt(groupNumberId), contactModel.getName());
                 }
 
 
@@ -82,9 +91,8 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
     }
 
 
-
     public interface OnDeleteClickListener {
-        void onDeleteClick(int position);
+        void onDeleteClick(int position, String name);
     }
 
 
@@ -108,14 +116,6 @@ public class AdapterAddedPhoneContacts extends RecyclerView.Adapter<AdapterAdded
             tvItemName = itemView.findViewById(R.id.tvItemName);
             tvItemNumber = itemView.findViewById(R.id.tvItemNumber);
             ivDelete = itemView.findViewById(R.id.ivdelete);
-            /*ivDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (onDeleteClickListener!=null){
-                        onDeleteClickListener.onDeleteClick(getAdapterPosition());
-                    }
-                }
-            });*/
         }
     }
 }

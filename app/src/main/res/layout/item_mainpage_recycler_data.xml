@@ -50,7 +50,6 @@
             android:maxLines="2"
             android:text="Name"
             android:textSize="20sp"
-            android:textStyle="bold"
             app:layout_constraintLeft_toRightOf="@+id/ivProfileimg"
             app:layout_constraintTop_toTopOf="parent" />
 

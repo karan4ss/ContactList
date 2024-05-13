@@ -35,6 +35,7 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
         this.onDeleteClickListener = onDeleteClickListener;
         this.context = context;
     }
+
     public void setData(ArrayList<ModelGroupName> data) {
         this.group_list = data;
         notifyDataSetChanged();
@@ -62,18 +63,19 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
         //  String groupNameInspinner = groupNameSpinner.getSelectedItem().toString();
         for (ContactModel contactModel : groupNumbersList) {
             String groupName = contactModel.id;
+            String grpid = contactModel.getId();
 
-            if (groupedMap.containsKey(groupName)) {
+            if (groupedMap.containsKey(grpid)) {
                 groupedMap.get(contactModel.id).add(contactModel);
             } else {
                 // groupNameWiseList.add(contactModel);
                 ArrayList<ContactModel> groupNameWiseList = new ArrayList<>();
                 groupNameWiseList.add(contactModel);
-                groupedMap.put(groupName, groupNameWiseList);
+                groupedMap.put(grpid, groupNameWiseList);
             }
         }
 
-        ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(group_name);
+        ArrayList<ContactModel> group1Records = (ArrayList<ContactModel>) groupedMap.get(group_id);
         if (group1Records != null) {
             String sizeOfGroup = String.valueOf(group1Records.size());
             holder.tvsizeofgroupMembers.setText(sizeOfGroup);
@@ -83,7 +85,7 @@ public class AdapterGroupNames extends RecyclerView.Adapter<AdapterGroupNames.Vi
 
         //
 
-        if (group_name != null) {
+        if (group_id != null) {
             holder.tvItemGroupName.setText(modelGroupName.getGroupName());
         }
         holder.ivItemDeleteicon.setOnClickListener(new View.OnClickListener() {
